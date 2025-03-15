@@ -1,7 +1,17 @@
 import React from 'react'
-
-const page = () => {
+import { getTests } from '~/server/test_queries'
+const page = async () => {
+    const tests = await getTests()
   return (
-    <div>page</div>
+    <div>
+        {tests.map((test) => (
+            <div key={test.id}>
+                <h1>{test.name}</h1>
+            </div>
+        ))}
+    </div>
   )
 }
+
+
+export default page;

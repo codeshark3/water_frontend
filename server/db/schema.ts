@@ -73,3 +73,19 @@ export const verification = createTable("verification", {
   value: text("value").notNull(),
   expiresAt: timestamp("expiresAt").notNull(),
 });
+
+
+export const tests = createTable("tests", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  gender: text("gender").notNull(),
+  age: integer("age").notNull(),
+  location: text("location").notNull(),
+  userId: text("userId")
+
+    .notNull()
+    .references(() => user.id),
+  description: text("description"),
+  createdAt: timestamp("createdAt").notNull(),
+  updatedAt: timestamp("updatedAt").notNull(),
+});
