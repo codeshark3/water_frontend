@@ -13,6 +13,7 @@ import {
   timestamp,
   varchar,
   serial,
+  pgTable,
 } from "drizzle-orm/pg-core";
 
 /**
@@ -74,18 +75,18 @@ export const verification = createTable("verification", {
   expiresAt: timestamp("expiresAt").notNull(),
 });
 
-
-export const tests = createTable("tests", {
+export const tests = pgTable("tests", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   gender: text("gender").notNull(),
   age: integer("age").notNull(),
   location: text("location").notNull(),
   userId: text("userId")
-
     .notNull()
     .references(() => user.id),
   description: text("description"),
   createdAt: timestamp("createdAt").notNull(),
   updatedAt: timestamp("updatedAt").notNull(),
+  result: integer("result"),
+  processed_at: timestamp("processed_at"),
 });

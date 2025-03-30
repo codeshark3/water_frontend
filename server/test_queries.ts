@@ -16,8 +16,19 @@ export async function getTests() {
 }
 
 export async function getTest(id: string) {
-    const test = await db.query.tests.findFirst({
-        where: eq(tests.id, id)
-    });
+    const test = await db.select().from(tests).where(eq(tests.id, id))
     return test;
+}
+
+export async function updateTestResult(id: string, result: number) {
+    const updatedTest = await db
+        .update(tests)
+        .set({ 
+            result: result,
+            processed_at: new Date()
+        })
+        .where(eq(tests.id, id))
+        .returning();
+    
+    return updatedTest[0];
 }
