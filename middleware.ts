@@ -19,8 +19,8 @@ const staffRoutes = [
   "/tests",
   "/datasets/create",
   "/datasets/update/:id*",
-  "/access",
-  "/access/[id]",
+ 
+  "/tests/[id]",
 ];
 const adminRoutes = [
   "/admin",
@@ -37,12 +37,12 @@ const adminRoutes = [
 export default async function authMiddleware(request: NextRequest) {
   const pathName = request.nextUrl.pathname;
   // Check if it's a dynamic dataset route like /datasets/123
-  const isDynamicDatasetRoute = /^\/datasets\/[^\/]+$/.test(pathName);
+  const isDynamicTestRoute = /^\/tests\/[^\/]+$/.test(pathName);
 
   // Check if the request path matches any of the defined routes
   const isPublicRoute =
     publicRoutes.includes(pathName) ||
-    isDynamicDatasetRoute 
+    isDynamicTestRoute 
    
   const isAuthRoute = authRoutes.includes(pathName);
   const isPasswordRoute = passwordRoutes.includes(pathName);
@@ -50,14 +50,12 @@ export default async function authMiddleware(request: NextRequest) {
   const isDynamicAdminRoute = /^\/admin\/[^\/]+/.test(pathName);
   const isAdminRoute = adminRoutes.includes(pathName) || isDynamicAdminRoute;
 
-  // Add a check for dynamic access routes
-  const isDynamicAccessRoute = /^\/access\/[^\/]+$/.test(pathName);
-
+  
   console.log(
     "Path:",
     pathName,
     "isDynamicRoute:",
-    isDynamicDatasetRoute ,
+    isDynamicTestRoute ,
     "isPublic:",
     isPublicRoute,
     "isAdmin:",
@@ -108,7 +106,7 @@ export default async function authMiddleware(request: NextRequest) {
 
   // Admin can access public and admin routes only
   if (role === "admin") {
-    if (isPublicRoute || isAdminRoute || isStaffRoute || isDynamicAccessRoute) {
+    if (isPublicRoute || isAdminRoute || isStaffRoute || isDynamicTestRoute) {
       return NextResponse.next();
     }
     return NextResponse.redirect(new URL("/admin", request.url));

@@ -153,7 +153,7 @@ export function DataTable<TData extends { id: string }, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  onClick={() => router.push(`/datasets/${row.original.id}`)}
+                  onClick={() => router.push(`/tests/${row.original.id}`)}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>

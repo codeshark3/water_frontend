@@ -15,20 +15,20 @@ export async function getTests() {
     return test;
 }
 
-export async function getTest(id: string) {
+export async function getTestById(id: string) {
     const test = await db.select().from(tests).where(eq(tests.id, id))
-    return test;
+    return test;  
 }
 
-export async function updateTestResult(id: string, result: number) {
-    const updatedTest = await db
-        .update(tests)
-        .set({ 
-            result: result,
-            processed_at: new Date()
-        })
-        .where(eq(tests.id, id))
-        .returning();
+// export async function updateTestResult(id: string, result: number) {
+//     const updatedTest = await db
+//         .update(tests)
+//         .set({ 
+//             result: result,
+//             processed_at: new Date()
+//         })
+//         .where(eq(tests.id, id))
+//         .returning();
     
-    return updatedTest[0];
-}
+//     return updatedTest[0];
+// }
