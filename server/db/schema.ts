@@ -14,6 +14,7 @@ import {
   varchar,
   serial,
   pgTable,
+  uuid,
 } from "drizzle-orm/pg-core";
 
 /**
@@ -75,18 +76,37 @@ export const verification = createTable("verification", {
   expiresAt: timestamp("expiresAt").notNull(),
 });
 
-export const tests = pgTable("tests", {
+export const tests =createTable("tests", {
   id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  gender: text("gender").notNull(),
-  age: integer("age").notNull(),
-  location: text("location").notNull(),
+  name: text("name"),
+  gender: text("gender"),
+  age: integer("age"),
+  location: text("location"),
   userId: text("userId")
     .notNull()
     .references(() => user.id),
-  description: text("description"),
-  createdAt: timestamp("createdAt").notNull(),
-  updatedAt: timestamp("updatedAt").notNull(),
-  result: integer("result"),
-  processed_at: timestamp("processed_at"),
+  oncho: text("oncho"),
+  schistosomiasis: text("schistosomiasis"),
+  lf: text("lf"),
+  helminths: text("helminths"),
+  createdAt: timestamp("createdAt"),
+  updatedAt: timestamp("updatedAt"),
+
+});
+
+export const users = pgTable("users", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: varchar("name", { length: 255 }),
+  email: varchar("email", { length: 255 }).unique().notNull(),
+  password: text("password").notNull(),
+  role: varchar("role", { length: 50 }).default("user"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const sessions = pgTable("sessions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
 });

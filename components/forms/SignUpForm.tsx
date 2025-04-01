@@ -33,30 +33,37 @@ const SignUpForm = () => {
   });
 
   async function onSubmit(values: z.infer<typeof SignUpSchema>) {
-    const { name, email, password, confirm_password } = values;
-    const { data, error } = await authClient.signUp.email({
-      email,
-      name,
-      password,
-      callbackURL: "/sign-in ",
-      fetchOptions: {
-        onRequest: () => {
-          toast.loading("requesting");
-        },
-        onSuccess: () => {
-          toast.success("Login successful")
-          form.reset();
-          router.push("/sign-in"); // redirect to login page
-        },
-
-
-        onError: () => {
-          toast.error("Registrationfailed");
+    try {
+      const { name, email, password } = values;
+      const { data, error } = await authClient.signUp.email({
+        email,
+        name,
+        password,
+        callbackURL: "/sign-in",
+        fetchOptions: {
+          onRequest: () => {
+            toast.loading("Creating your account...");
+          },
+          onSuccess: () => {
+            toast.dismiss();
+            toast.success("Account created successfully!");
+            form.reset();
+            router.push("/sign-in");
+          },
+          onError: (error) => {
+            toast.dismiss();
+            toast.error( "Registration failed");
           },
         },
+      });
 
-    });
-    console.log(values);
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+     
+     console.log(error);
+    }
   }
 
   return (
@@ -105,8 +112,7 @@ const SignUpForm = () => {
               // iconAlt="email"
             />
             <Button type="submit" className="w-full bg-primary">
-              Sign In
-              {/* <span className="ms-1">🔑</span> */}
+              Sign Up
             </Button>
           </form>
         </Form>
@@ -115,7 +121,7 @@ const SignUpForm = () => {
         <p className="text-sm text-muted-foreground">
           Already have an account?{" "}
           <Link href="/sign-in" className="text-primary hover:underline">
-            Sign Up
+            Sign In
           </Link>
         </p>
       </CardFooter>

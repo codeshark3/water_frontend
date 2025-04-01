@@ -2,11 +2,8 @@ import { createAuthClient } from "better-auth/react";
 import { adminClient } from "better-auth/client/plugins";
 
 export const authClient = createAuthClient({
-  //local
-  //baseURL: "http://localhost:3000",
-  //vercel
-  baseUrl: "https://csir-dbms.vercel.app",
-  // the base url of your auth server
+  baseUrl: process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:3000/api/auth",
   plugins: [adminClient()],
 });
-export const { signIn, signUp, useSession } = createAuthClient();
+
+export const { signIn, signUp, useSession } = authClient;
