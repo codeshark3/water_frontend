@@ -20,7 +20,7 @@ const TestsPage = async () => {
     <div>
       <div className="container mx-auto py-8">
         <div className="mb-8 flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-900">Datasets</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Tests</h1>
           {/* <Link
             href="/datasets/create"
             className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-white hover:bg-primary/90"

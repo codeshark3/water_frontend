@@ -218,24 +218,23 @@ type MenuItem = {
 // Define roles and their corresponding menu items
 const MENU_ITEMS: Record<string, MenuItem[]> = {
   admin: [
-    { title: "Home", url: "/admin", icon: Home },
-    { title: "Manage Users", url: "/admin/users", icon: User2 },
-
-    { title: "Manage Datasets", url: "/datasets", icon: Calendar },
-    { title: "Access Requests", url: "/access", icon: Inbox },
+    { title: "Home", url: "/admin", icon: Home as React.ComponentType<React.SVGProps<SVGSVGElement>> },
+    { title: "Manage Users", url: "/admin/users", icon: User2 as React.ComponentType<React.SVGProps<SVGSVGElement>> },
+    { title: "Manage Datasets", url: "/datasets", icon: Calendar as React.ComponentType<React.SVGProps<SVGSVGElement>> },
+    { title: "Access Requests", url: "/access", icon: Inbox as React.ComponentType<React.SVGProps<SVGSVGElement>> },
   ],
   staff: [
-    { title: "Home", url: "/staff", icon: Home },
-    { title: "Manage Datasets", url: "/datasets", icon: Inbox },
-    { title: "Access Requests", url: "/access", icon: Inbox },
-    { title: "Calendar", url: "#", icon: Calendar },
-    { title: "Search", url: "#", icon: Search },
-    { title: "Settings", url: "#", icon: Settings },
+    { title: "Home", url: "/staff", icon: Home as React.ComponentType<React.SVGProps<SVGSVGElement>> },
+    { title: "Manage Datasets", url: "/datasets", icon: Inbox as React.ComponentType<React.SVGProps<SVGSVGElement>> },
+    { title: "Access Requests", url: "/access", icon: Inbox as React.ComponentType<React.SVGProps<SVGSVGElement>> },
+    { title: "Calendar", url: "#", icon: Calendar as React.ComponentType<React.SVGProps<SVGSVGElement>> },
+    { title: "Search", url: "#", icon: Search as React.ComponentType<React.SVGProps<SVGSVGElement>> },
+    { title: "Settings", url: "#", icon: Settings as React.ComponentType<React.SVGProps<SVGSVGElement>> },
   ],
   user: [
-    { title: "Home", url: "/customer", icon: Home },
-    { title: "Datasets", url: "/datasets", icon: Inbox },
-    { title: "Settings", url: "#", icon: Settings },
+    { title: "Home", url: "/customer", icon: Home as React.ComponentType<React.SVGProps<SVGSVGElement>> },
+    { title: "Datasets", url: "/datasets", icon: Inbox as React.ComponentType<React.SVGProps<SVGSVGElement>> },
+    { title: "Settings", url: "#", icon: Settings as React.ComponentType<React.SVGProps<SVGSVGElement>> },
   ],
 };
 

@@ -14,7 +14,7 @@ import {
 import { headers } from "next/headers";
 import { auth } from "~/lib/auth";
 
-const DatasetDetailsPage = async (props: {
+const TestDetailsPage = async (props: {
   params: Promise<{ id: string }>;
 }) => {
   const session = await auth.api.getSession({
@@ -122,4 +122,4 @@ const DatasetDetailsPage = async (props: {
   );
 };
 
-export default DatasetDetailsPage;
+export default TestDetailsPage;

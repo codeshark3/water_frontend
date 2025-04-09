@@ -71,10 +71,6 @@ export function DataTable<TData extends { id: string }, TValue>({
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
-    // filterFns:{
-    //   fuzzy:fuzzyFilter,
-    // }
-    // globalFilterFn: "fuzzy", // built-in filter function
     state: {
       sorting,
       columnFilters,
@@ -86,7 +82,6 @@ export function DataTable<TData extends { id: string }, TValue>({
 
   return (
     <div>
-      {" "}
       <div className="flex items-center py-4">
         <Input
           placeholder="Search..."
@@ -94,12 +89,6 @@ export function DataTable<TData extends { id: string }, TValue>({
           value={globalFilter ?? ""}
           onChange={(e) => setGlobalFilter?.(e.target.value)}
         />
-        {/* <Input
-          placeholder="Filter emails..."
-          value={globalFilter ?? ""}
-          onChange={(e) => table.setGlobalFilter(String(e.target.value))}
-          className="max-w-sm"
-        /> */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -125,7 +114,7 @@ export function DataTable<TData extends { id: string }, TValue>({
                 );
               })}
           </DropdownMenuContent>
-        </DropdownMenu>{" "}
+        </DropdownMenu>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -134,7 +123,7 @@ export function DataTable<TData extends { id: string }, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="bg-gray-100 font-semibold text-gray-700 px-4 py-3">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -154,9 +143,10 @@ export function DataTable<TData extends { id: string }, TValue>({
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                   onClick={() => router.push(`/tests/${row.original.id}`)}
+                  className="hover:bg-gray-50 cursor-pointer transition-colors"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="px-4 py-3 text-gray-600">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
@@ -169,7 +159,7 @@ export function DataTable<TData extends { id: string }, TValue>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center text-gray-500"
                 >
                   No results.
                 </TableCell>
@@ -180,7 +170,7 @@ export function DataTable<TData extends { id: string }, TValue>({
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex items-center space-x-2">
-          <span className="text-sm">
+          <span className="text-sm text-gray-600">
             Page {table.getState().pagination.pageIndex + 1} of{" "}
             {table.getPageCount()}
           </span>

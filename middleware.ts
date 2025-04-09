@@ -5,18 +5,14 @@ import type { Session } from "~/lib/auth";
 // Type for route matching
 const publicRoutes = [
   "/",
-  "/search",
-  // "/datasets",
-  // "/dataset/[id]",
-  "/api/uploadthing",
-  "/searchpage",
-  "/searchpage/[id]",
+
+"/tests"
 ];
 const authRoutes = ["/sign-in", "/sign-up"];
 const passwordRoutes = ["/reset-password", "/forgot-password"];
 const staffRoutes = [
   "/staff",
-  "/tests",
+  //"/tests",
   "/datasets/create",
   "/datasets/update/:id*",
  
