@@ -235,7 +235,7 @@ const CustomFormField = (props: CustomProps) => {
             <FormLabel className="">{label}</FormLabel>
           )}
 
-          <RenderField field={field} props={props} />
+          {RenderField({ field, props })}
           <FormMessage className="shad-error" />
         </FormItem>
       )}
