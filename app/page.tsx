@@ -17,18 +17,18 @@ export default function Home() {
   return (
     <>
     <Header/>
-    <Tabs defaultValue="oncho" className="w-full">
+    <Tabs defaultValue="oncho" className="w-full p-4">
       <TabsList className="w-full">
         <TabsTrigger value="oncho">Onchocerciasis</TabsTrigger>
         <TabsTrigger value="schisto">Schistosomiasis</TabsTrigger>
         <TabsTrigger value="lf">LF</TabsTrigger>
         <TabsTrigger value="helminths">Helminths</TabsTrigger>
       </TabsList>
-      <TabsContent value="oncho" className='w-full flex p-2 mx-4'>
+      <TabsContent value="oncho" className='w-full flex  mx-4'>
         <div className='w-2/3'>
         <ChartCard data={data}/></div>
      <div className='w-1/3'>
-     <div className="grid gap-4">
+     <div className="grid gap-4 px-4">
        <TestInfoCard 
          total={240}
          positive={150} 
@@ -38,10 +38,10 @@ export default function Home() {
      </div>
 
       </TabsContent>
-      <TabsContent value="schisto" className='w-full flex p-2 mx-4'>     <div className='w-2/3'>
+      <TabsContent value="schisto" className='w-full flex  mx-4'>     <div className='w-2/3'>
         <ChartCard data={data}/></div>
      <div className='w-1/3'>
-     <div className="grid gap-4">
+     <div className="grid gap-4 px-4">
        <TestInfoCard 
          total={240}
          positive={150} 
@@ -49,10 +49,10 @@ export default function Home() {
        />
      </div>
      </div></TabsContent>
-      <TabsContent value="lf"className='w-full flex p-2 mx-4'>    <div className='w-2/3'>
+      <TabsContent value="lf"className='w-full flex  mx-4'>    <div className='w-2/3'>
         <ChartCard data={data}/></div>
      <div className='w-1/3'>
-     <div className="grid gap-4">
+     <div className="grid gap-4 px-4">
        <TestInfoCard 
          total={240}
          positive={150} 
@@ -60,11 +60,11 @@ export default function Home() {
        />
      </div>
      </div></TabsContent>
-      <TabsContent value="helminths" className='w-full flex p-2 mx-4'>  
+      <TabsContent value="helminths" className='w-full flex mx-4'>  
           <div className='w-2/3'>
         <ChartCard data={data}/></div>
      <div className='w-1/3'>
-     <div className="grid gap-4">
+     <div className="grid gap-4 px-4">
        <TestInfoCard 
          total={240}
          positive={150} 

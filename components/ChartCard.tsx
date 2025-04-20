@@ -11,7 +11,7 @@ export default function ChartCard(
     { data }: ChartCardProps
 ) {
   return (
-    <Card className="w-full mx-auto p-2   min-w-[8rem] ">
+    <Card className="w-full min-w-[8rem] ">
       <CardHeader>
         <CardTitle>Monthly Data</CardTitle>
       </CardHeader>

@@ -10,20 +10,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
   
   export default function TestInfoCards({ total, positive, negative }: TestInfoCardProps) {
     return (
-      <div className="flex-col w-full">
+      <div className="flex-col w-full ">
         {/* Total */}
-        <Card className="p-4">
+        <Card className="p-4 border-l-4 border-zinc-500">
           <CardHeader>
             <CardTitle>Total Tests</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-semibold">{total}</p>
+          <CardContent >
+            <p className="text-5xl font-bold">{total}</p>
           </CardContent>
         </Card>
   
   <div className="flex w-full">
         {/* Positive */}
-        <Card className="p-4 border-l-4 border-green-500 w-1/2 m-2">
+        <Card className="py-4 border-l-4 border-green-500 w-1/2 m-2">
           <CardHeader>
             <CardTitle>Positive Cases</CardTitle>
           </CardHeader>
@@ -33,7 +33,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
         </Card>
   
         {/* Negative */}
-        <Card className="p-4 border-l-4 border-red-500 w-1/2 m-2">
+        <Card className="py-4 border-l-4 border-red-500 w-1/2 m-2">
           <CardHeader>
             <CardTitle>Negative Cases</CardTitle>
           </CardHeader>

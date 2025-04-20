@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { authClient } from "~/lib/auth-client";
 import { Button } from "./ui/button";
 import { Link } from "lucide-react";
-import { toast } from "~/hooks/use-toast";
+import { toast } from "sonner";
 const SignOutButton = () => {
   const router = useRouter();
 
@@ -13,18 +13,14 @@ const SignOutButton = () => {
       await authClient.signOut({
         fetchOptions: {
           onRequest: () => {
-            toast({
-              // title: { success },
-              description: " Signing out...",
-              variant: "default",
-              className: "bg-blue-500 text-white font-bold ",
-            });
+              toast.loading("Signing out...", {
+              
+                className: "bg-blue-500 text-white font-bold",
+              });
           },
           onSuccess: () => {
-            toast({
+            toast.success("Signed out successfully",  {
               // title: { success },
-              description: "Signed out successfully",
-              variant: "default",
               className: "bg-emerald-500 text-white font-bold ",
             });
 

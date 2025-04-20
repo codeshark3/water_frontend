@@ -18,8 +18,9 @@ export default function Header() {
         </div>
         <div className="flex items-center gap-4">
           <div className="relative">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search..." className="pl-8" />
+            <Link href="/tests">
+            Tests
+            </Link>
           </div>
         </div>
       </div>
