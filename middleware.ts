@@ -5,7 +5,7 @@ import type { Session } from "~/lib/auth";
 // Type for route matching
 const publicRoutes = [
   "/",
-
+'/flask-api/python',
 "/tests"
 ];
 const authRoutes = ["/sign-in", "/sign-up"];
