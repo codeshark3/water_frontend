@@ -18,8 +18,13 @@ export default function Header() {
         </div>
         <div className="flex items-center gap-4">
           <div className="relative">
-            <Link href="/tests">
-            Tests
+            <Link href="/dashboard" className="hover:text-primary transition-colors">
+              Dashboard
+            </Link>
+          </div>
+          <div className="relative">
+            <Link href="/tests" className="hover:text-primary transition-colors">
+              Tests
             </Link>
           </div>
         </div>

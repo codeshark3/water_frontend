@@ -9,6 +9,7 @@ import json
 import base64
 import datetime
 import logging
+import requests
 
 # Configure logging
 logging.basicConfig(
@@ -58,7 +59,8 @@ def process_tests():
             # Process images with correct keys
             def process_image(image):
               
-                img = cv2.imread(image)
+                img = Image.open(image)
+                img = img.convert('RGB')
                 img = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
             
                 img = cv2.inRange(img, (150, 60, 100), (255, 255, 255))
@@ -82,7 +84,18 @@ def process_tests():
                 "timestamp": datetime.datetime.now().isoformat(),
                 "results": results
             }
-            
+            # Send data to Next.js frontend
+            try:
+                frontend_url = 'http://localhost:3000/insert/results'  # Adjust URL as needed
+                headers = {'Content-Type': 'application/json'}
+                response = requests.post(frontend_url, json=data_to_save, headers=headers)
+                
+                if response.status_code != 200:
+                    logger.error(f"Failed to send data to frontend: {response.text}")
+                else:
+                    logger.info("Successfully sent data to frontend")
+            except Exception as e:
+                logger.error(f"Error sending data to frontend: {str(e)}")
             # Ensure the data directory exists
             os.makedirs('./api/data', exist_ok=True)
             
@@ -107,6 +120,20 @@ def process_tests():
         error_msg = f"Error processing request: {str(e)}"
         logger.error(error_msg)
         return jsonify({"error": error_msg}), 500
+
+# Create API route for results
+@app.route('/api/results', methods=['POST'])
+def save_results():
+    try:
+        data = request.get_json()
+        logger.info("Received data in API route")
+        return jsonify({"message": "Data received successfully"})
+    except Exception as e:
+        logger.error(f"Error processing request: {str(e)}")
+        return jsonify({"error": "Failed to process request"}), 500
+
+# Ensure the data directory exists
+os.makedirs('./api/data', exist_ok=True)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5238, debug=True)

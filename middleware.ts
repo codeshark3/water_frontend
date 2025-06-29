@@ -1,7 +1,7 @@
 import { betterFetch } from "@better-fetch/fetch";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Session } from "~/lib/auth";
-
+import { auth } from "~/lib/auth";
 // Type for route matching
 const publicRoutes = [
   "/",
@@ -15,7 +15,7 @@ const staffRoutes = [
   //"/tests",
   "/datasets/create",
   "/datasets/update/:id*",
- 
+ "/dashboard",
   "/tests/[id]",
 ];
 const adminRoutes = [
@@ -27,6 +27,7 @@ const adminRoutes = [
   "/datasets/update/:id*",
   "/datasets",
   "/datasets/delete/:id*",
+  "/dashboard",
   "/access",
 ];
 

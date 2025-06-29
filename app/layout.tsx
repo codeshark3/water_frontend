@@ -5,7 +5,7 @@ import { ModeToggle } from "~/components/Toggle";
 import { ThemeProvider } from "~/components/theme-provider";
 import { Toaster } from "~/components/ui/sonner";
 import { cn } from "~/lib/utils";
-
+import Header from "~/components/Header";
 
 export const metadata = {
   title: 'Create Next App',
@@ -33,7 +33,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {/* <Header /> */}
+          <Header />
           {children}{" "}
           <div className="fixed bottom-4 right-4 z-50">
             <ModeToggle />
