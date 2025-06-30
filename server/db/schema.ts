@@ -82,11 +82,13 @@ export const tests =createTable("tests", {
   gender: text("gender"),
   age: integer("age"),
   location: text("location"),
+  date: timestamp("date"),
   userId: text("userId")
     .notNull()
     .references(() => user.id),
   oncho: text("oncho"),
   schistosomiasis: text("schistosomiasis"),
+
   lf: text("lf"),
   helminths: text("helminths"),
   createdAt: timestamp("createdAt"),

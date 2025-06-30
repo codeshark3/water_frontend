@@ -86,7 +86,65 @@ export async function insertFromCSV(filePath: string) {
     
         // Convert to match our schema with column mapping
         const formattedRows = rows.map((row, index) => {
-            // Check for required userId - if not present, we'll need to handle this
+            // Parse date field
+            let parsedDate: Date | null = null;
+            if (row.date) {
+                try {
+                    // Try multiple date formats
+                    const dateStr = row.date.trim();
+                    if (dateStr) {
+                        // Try ISO format first (YYYY-MM-DD)
+                        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                            parsedDate = new Date(dateStr);
+                        }
+                        // Try DD/MM/YYYY format
+                        else if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+                            const parts = dateStr.split('/');
+                            if (parts.length === 3) {
+                                const [day, month, year] = parts as [string, string, string];
+                                parsedDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                            }
+                        }
+                        // Try MM/DD/YYYY format
+                        else if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateStr)) {
+                            const parts = dateStr.split('/');
+                            if (parts.length === 3) {
+                                const [month, day, year] = parts as [string, string, string];
+                                parsedDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                            }
+                        }
+                        // Try DD-MM-YYYY format
+                        else if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+                            const parts = dateStr.split('-');
+                            if (parts.length === 3) {
+                                const [day, month, year] = parts as [string, string, string];
+                                parsedDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                            }
+                        }
+                        // Try MM-DD-YYYY format
+                        else if (/^\d{1,2}-\d{1,2}-\d{4}$/.test(dateStr)) {
+                            const parts = dateStr.split('-');
+                            if (parts.length === 3) {
+                                const [month, day, year] = parts as [string, string, string];
+                                parsedDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                            }
+                        }
+                        // Try any other format that JavaScript can parse
+                        else {
+                            parsedDate = new Date(dateStr);
+                        }
+                        
+                        // Validate the parsed date
+                        if (!parsedDate || isNaN(parsedDate.getTime())) {
+                            console.warn(`Row ${index + 1}: Invalid date format '${dateStr}', using current date`);
+                            parsedDate = new Date();
+                        }
+                    }
+                } catch (error) {
+                    console.warn(`Row ${index + 1}: Error parsing date '${row.date}', using current date`);
+                    parsedDate = new Date();
+                }
+            }
           
             return {
                 id: row.id || crypto.randomUUID(), // Generate UUID if not provided
@@ -94,6 +152,7 @@ export async function insertFromCSV(filePath: string) {
                 gender: row.gender || null,
                 age: row.age ? parseInt(row.age, 10) : null,
                 location: row.location || null,
+                date: parsedDate || null, // Use parsed date or null
                 userId: "Lwt9Yg4HCGUF6DNdcsBjT", // Use default if not provided
                 oncho: row.oncho || null,
                 schistosomiasis: row.schistosomiasis || row.schisto || null, // Handle both column names

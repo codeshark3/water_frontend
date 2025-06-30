@@ -10,6 +10,13 @@ import base64
 import datetime
 import logging
 import requests
+import psycopg2
+from psycopg2.extras import RealDictCursor
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import StandardScaler
+import numpy as np
+from datetime import datetime, timedelta
 
 # Configure logging
 logging.basicConfig(
@@ -21,6 +28,165 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 app.logger.setLevel(logging.INFO)
+
+# Database configuration
+DB_CONFIG = {
+    'host': 'localhost',
+    'database': 'water_ml',
+    'user': 'postgres',
+    'password': 'password',
+    'port': '5432'
+}
+
+def get_db_connection():
+    """Create and return a database connection"""
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        return conn
+    except Exception as e:
+        logger.error(f"Database connection error: {e}")
+        return None
+
+def get_disease_data(disease_type, months=6):
+    """Get historical disease data from database"""
+    try:
+        conn = get_db_connection()
+        if not conn:
+            return None
+        
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Get data for the specified disease type
+        query = """
+        SELECT 
+            DATE_TRUNC('month', "createdAt") as month,
+            COUNT(*) as total_tests,
+            COUNT(CASE WHEN {} = 'positive' THEN 1 END) as positive_cases,
+            ROUND(
+                (COUNT(CASE WHEN {} = 'positive' THEN 1 END)::float / COUNT(*)) * 100, 2
+            ) as infection_rate
+        FROM tests 
+        WHERE "createdAt" >= NOW() - INTERVAL '{} months'
+        AND {} IS NOT NULL
+        GROUP BY DATE_TRUNC('month', "createdAt")
+        ORDER BY month
+        """.format(disease_type, disease_type, months, disease_type)
+        
+        cursor.execute(query)
+        results = cursor.fetchall()
+        
+        cursor.close()
+        conn.close()
+        
+        return results
+    except Exception as e:
+        logger.error(f"Error fetching disease data: {e}")
+        return None
+
+def create_forecast(data, forecast_months=3):
+    """Create forecast using linear regression"""
+    try:
+        if not data or len(data) < 2:
+            return None
+        
+        # Convert to DataFrame
+        df = pd.DataFrame(data)
+        df['month'] = pd.to_datetime(df['month'])
+        df = df.sort_values('month')
+        
+        # Create features (months since start)
+        df['month_num'] = (df['month'] - df['month'].min()).dt.days / 30
+        
+        # Prepare data for forecasting
+        X = df[['month_num']].values
+        y_infection_rate = df['infection_rate'].values
+        y_positive_cases = df['positive_cases'].values
+        
+        # Create and train models
+        model_rate = LinearRegression()
+        model_cases = LinearRegression()
+        
+        model_rate.fit(X, y_infection_rate)
+        model_cases.fit(X, y_positive_cases)
+        
+        # Generate future months
+        last_month = df['month'].max()
+        future_months = []
+        for i in range(1, forecast_months + 1):
+            future_month = last_month + timedelta(days=30*i)
+            future_months.append(future_month)
+        
+        # Create forecast features
+        future_month_nums = [(future_month - df['month'].min()).days / 30 for future_month in future_months]
+        future_X = np.array(future_month_nums).reshape(-1, 1)
+        
+        # Make predictions
+        forecast_rates = model_rate.predict(future_X)
+        forecast_cases = model_cases.predict(future_X)
+        
+        # Ensure predictions are reasonable
+        forecast_rates = np.clip(forecast_rates, 0, 100)
+        forecast_cases = np.clip(forecast_cases, 0, None)
+        
+        # Create forecast data
+        forecast_data = []
+        for i, month in enumerate(future_months):
+            forecast_data.append({
+                'month': month.strftime('%Y-%m'),
+                'forecasted_infection_rate': round(float(forecast_rates[i]), 2),
+                'forecasted_positive_cases': round(float(forecast_cases[i]), 0),
+                'is_forecast': True
+            })
+        
+        return forecast_data
+    except Exception as e:
+        logger.error(f"Error creating forecast: {e}")
+        return None
+
+@app.route("/flask-api/forecast/<disease_type>", methods=["GET"])
+def get_disease_forecast(disease_type):
+    """Get disease forecast data"""
+    try:
+        # Validate disease type
+        valid_diseases = ['oncho', 'schistosomiasis', 'lf', 'helminths']
+        if disease_type not in valid_diseases:
+            return jsonify({"error": "Invalid disease type"}), 400
+        
+        # Get historical data
+        historical_data = get_disease_data(disease_type, months=12)
+        if not historical_data:
+            return jsonify({"error": "Failed to fetch historical data"}), 500
+        
+        # Create forecast
+        forecast_data = create_forecast(historical_data, forecast_months=6)
+        if not forecast_data:
+            return jsonify({"error": "Failed to create forecast"}), 500
+        
+        # Format historical data
+        formatted_historical = []
+        for row in historical_data:
+            formatted_historical.append({
+                'month': row['month'].strftime('%Y-%m'),
+                'total_tests': row['total_tests'],
+                'positive_cases': row['positive_cases'],
+                'infection_rate': float(row['infection_rate']),
+                'is_forecast': False
+            })
+        
+        # Combine historical and forecast data
+        combined_data = formatted_historical + forecast_data
+        
+        return jsonify({
+            "disease_type": disease_type,
+            "historical_data": formatted_historical,
+            "forecast_data": forecast_data,
+            "combined_data": combined_data
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in forecast endpoint: {e}")
+        return jsonify({"error": str(e)}), 500
+
 
 @app.route("/flask-api/python", methods=["GET"])
 def test_connection():
@@ -137,3 +303,5 @@ os.makedirs('./api/data', exist_ok=True)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5238, debug=True)
+
+    
