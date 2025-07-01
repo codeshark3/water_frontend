@@ -2,7 +2,7 @@
 "use server";
 import { db } from "./db";
 
-import { tests } from "./db/schema";
+import { tests, forecasts } from "./db/schema";
 import { and, eq, desc, sql } from "drizzle-orm";
 import { SignInSchema,  } from "~/schemas/index";
 import type * as z from "zod";
@@ -176,6 +176,91 @@ export async function insertFromCSV(filePath: string) {
     } catch (error) {
         console.error('Error importing CSV:', error);
         throw new Error(`Failed to import CSV: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+}
+
+export async function saveForecastData(forecastData: Array<{
+    diseaseType: string;
+    month: string;
+    isForecast: boolean;
+    totalTests?: number;
+    positiveCases?: number;
+    infectionRate?: number;
+    forecastedInfectionRate?: number;
+    forecastedPositiveCases?: number;
+}>) {
+    try {
+        const formattedData = forecastData.map(data => ({
+            id: crypto.randomUUID(),
+            diseaseType: data.diseaseType,
+            month: data.month,
+            isForecast: data.isForecast,
+            totalTests: data.totalTests || null,
+            positiveCases: data.positiveCases || null,
+            infectionRate: data.infectionRate || null,
+            forecastedInfectionRate: data.forecastedInfectionRate || null,
+            forecastedPositiveCases: data.forecastedPositiveCases || null,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        }));
+
+        await db.insert(forecasts).values(formattedData);
+        return { success: true, message: `Saved ${formattedData.length} forecast records` };
+    } catch (error) {
+        console.error('Error saving forecast data:', error);
+        throw new Error(`Failed to save forecast data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+}
+
+export async function getForecastData(diseaseType: string, months: number = 18) {
+    try {
+        // Get data for the specified disease type, including both historical and forecast
+        const data = await db.select()
+            .from(forecasts)
+            .where(eq(forecasts.diseaseType, diseaseType))
+            .orderBy(forecasts.month);
+
+        if (!data || data.length === 0) {
+            return null;
+        }
+
+        // Filter to last N months if specified
+        if (months > 0) {
+            const cutoffDate = new Date();
+            cutoffDate.setMonth(cutoffDate.getMonth() - months);
+            const cutoffMonth = cutoffDate.toISOString().slice(0, 7); // YYYY-MM format
+            
+            return data.filter(item => item.month >= cutoffMonth);
+        }
+
+        return data;
+    } catch (error) {
+        console.error('Error fetching forecast data:', error);
+        throw new Error(`Failed to fetch forecast data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+}
+
+export async function clearOldForecasts(diseaseType: string, keepMonths: number = 6) {
+    try {
+        // Calculate cutoff date for old forecasts
+        const cutoffDate = new Date();
+        cutoffDate.setMonth(cutoffDate.getMonth() - keepMonths);
+        const cutoffMonth = cutoffDate.toISOString().slice(0, 7); // YYYY-MM format
+
+        // Delete old forecast data (not historical data)
+        const result = await db.delete(forecasts)
+            .where(
+                and(
+                    eq(forecasts.diseaseType, diseaseType),
+                    eq(forecasts.isForecast, true),
+                    sql`${forecasts.month} < ${cutoffMonth}`
+                )
+            );
+
+        return { success: true, message: 'Old forecasts cleared' };
+    } catch (error) {
+        console.error('Error clearing old forecasts:', error);
+        throw new Error(`Failed to clear old forecasts: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
 }
 

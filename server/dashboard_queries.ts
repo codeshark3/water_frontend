@@ -8,6 +8,11 @@ export async function getDiseaseStats() {
     count: sql<number>`count(*)`
   }).from(tests);
 
+  // Get people with at least one disease (union of all positive cases)
+  const anyDiseaseStats = await db.select({
+    any_disease_positive: sql<number>`count(case when oncho = 'positive' or schistosomiasis = 'positive' or lf = 'positive' or helminths = 'positive' then 1 end)`,
+  }).from(tests);
+
   // Get positive cases by disease
   const diseaseStats = await db.select({
     oncho_positive: sql<number>`count(case when oncho = 'positive' then 1 end)`,
@@ -40,9 +45,13 @@ export async function getDiseaseStats() {
   const stats = diseaseStats[0];
   const coInfectionStats = coInfections[0];
   const recentStats = recentActivity[0];
+  const anyDiseaseCount = anyDiseaseStats[0]?.any_disease_positive || 0;
+  const totalTestCount = totalTests[0]?.count || 0;
 
   return {
-    totalTests: totalTests[0]?.count || 0,
+    totalTests: totalTestCount,
+    anyDiseaseProbability: totalTestCount > 0 ? ((anyDiseaseCount / totalTestCount) * 100).toFixed(1) : '0',
+    anyDiseaseCount: anyDiseaseCount,
     diseases: {
       oncho: {
         positive: stats?.oncho_positive || 0,
