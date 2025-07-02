@@ -8,6 +8,9 @@ import TableComponent from "./TableComponent";
 import { Test } from "./columns";
 import CSVUploadButton from "./CSVUploadButton";
 
+// Force dynamic rendering to prevent build-time database connection
+export const dynamic = 'force-dynamic';
+
 const TestsPage = async () => {
   const data = await getTests();
   if (!data) return <div>No data found</div>;
