@@ -4,8 +4,33 @@ import os
 import logging
 import psycopg2
 from psycopg2.extras import RealDictCursor
-import pandas as pd
-from sklearn.linear_model import LinearRegression
+import numpy as np
+
+def simple_linear_regression(X, y):
+    """Simple linear regression implementation using numpy"""
+    X = np.array(X)
+    y = np.array(y)
+    n = len(X)
+    
+    # Calculate means
+    X_mean = np.mean(X)
+    y_mean = np.mean(y)
+    
+    # Calculate coefficients
+    numerator = np.sum((X - X_mean) * (y - y_mean))
+    denominator = np.sum((X - X_mean) ** 2)
+    
+    if denominator == 0:
+        return 0, y_mean  # Return slope 0 and intercept as mean
+    
+    slope = numerator / denominator
+    intercept = y_mean - slope * X_mean
+    
+    return slope, intercept
+
+def predict_linear(X, slope, intercept):
+    """Make predictions using linear regression coefficients"""
+    return slope * np.array(X) + intercept
 from datetime import datetime, timedelta
 import urllib.parse
 
@@ -80,48 +105,69 @@ def create_forecast(data, forecast_months=3):
     try:
         if not data or len(data) < 2:
             return None
-        df = pd.DataFrame(data)
-        df['month'] = pd.to_datetime(df['month'])
-        df = df.sort_values('month')
-        df['month_num'] = (df['month'] - df['month'].min()).dt.days / 30
-        X = df[['month_num']].values
-        y_infection_rate = df['infection_rate'].values
-        y_positive_cases = df['positive_cases'].values
-        y_total_tests = df['total_tests'].values
-        model_rate = LinearRegression()
-        model_cases = LinearRegression()
-        model_total = LinearRegression()
-        model_rate.fit(X, y_infection_rate)
-        model_cases.fit(X, y_positive_cases)
-        model_total.fit(X, y_total_tests)
-        last_month = df['month'].max()
+        
+        # Convert data to lists for processing
+        months = [datetime.strptime(row['month'], '%Y-%m-%d %H:%M:%S') if isinstance(row['month'], str) else row['month'] for row in data]
+        infection_rates = [row['infection_rate'] for row in data]
+        positive_cases = [row['positive_cases'] for row in data]
+        total_tests = [row['total_tests'] for row in data]
+        
+        # Sort by month
+        sorted_data = sorted(zip(months, infection_rates, positive_cases, total_tests), key=lambda x: x[0])
+        months, infection_rates, positive_cases, total_tests = zip(*sorted_data)
+        
+        # Calculate month numbers for regression
+        min_month = min(months)
+        month_nums = [(month - min_month).days / 30 for month in months]
+        
+        # Prepare data for sklearn
+        X = [[num] for num in month_nums]
+        y_infection_rate = list(infection_rates)
+        y_positive_cases = list(positive_cases)
+        y_total_tests = list(total_tests)
+        
+        # Train models using simple linear regression
+        X_flat = [x[0] for x in X]  # Flatten X for our simple regression
+        slope_rate, intercept_rate = simple_linear_regression(X_flat, y_infection_rate)
+        slope_cases, intercept_cases = simple_linear_regression(X_flat, y_positive_cases)
+        slope_total, intercept_total = simple_linear_regression(X_flat, y_total_tests)
+        
+        # Generate future months
+        last_month = max(months)
         future_months = []
         for i in range(1, forecast_months + 1):
-            # Add months properly to avoid duplicates
             if last_month.month + i > 12:
                 year = last_month.year + ((last_month.month + i - 1) // 12)
                 month = ((last_month.month + i - 1) % 12) + 1
             else:
                 year = last_month.year
                 month = last_month.month + i
-            future_month = pd.Timestamp(year=year, month=month, day=1)
+            future_month = datetime(year=year, month=month, day=1)
             future_months.append(future_month)
         
-        future_month_nums = [(future_month - df['month'].min()).days / 30 for future_month in future_months]
-        future_X = pd.DataFrame(future_month_nums)[0].values.reshape(-1, 1)
-        forecast_rates = model_rate.predict(future_X)
-        forecast_cases = model_cases.predict(future_X)
-        forecast_total = model_total.predict(future_X)
-        forecast_rates = pd.Series(forecast_rates).clip(0, 100)
-        forecast_cases = pd.Series(forecast_cases).clip(0, None)
-        forecast_total = pd.Series(forecast_total).clip(0, None)
+        # Calculate future month numbers
+        future_month_nums = [(future_month - min_month).days / 30 for future_month in future_months]
+        future_X = [[num] for num in future_month_nums]
+        
+        # Make predictions using simple linear regression
+        future_X_flat = [x[0] for x in future_X]  # Flatten for our simple regression
+        forecast_rates = predict_linear(future_X_flat, slope_rate, intercept_rate)
+        forecast_cases = predict_linear(future_X_flat, slope_cases, intercept_cases)
+        forecast_total = predict_linear(future_X_flat, slope_total, intercept_total)
+        
+        # Clip values
+        forecast_rates = [max(0, min(100, rate)) for rate in forecast_rates]
+        forecast_cases = [max(0, cases) for cases in forecast_cases]
+        forecast_total = [max(0, total) for total in forecast_total]
+        
+        # Format results
         forecast_data = []
         for i, month in enumerate(future_months):
             forecast_data.append({
                 'month': month.strftime('%Y-%m'),
-                'forecasted_infection_rate': round(float(forecast_rates.iloc[i]), 2),
-                'forecasted_positive_cases': round(float(forecast_cases.iloc[i]), 0),
-                'forecasted_total_tests': round(float(forecast_total.iloc[i]), 0),
+                'forecasted_infection_rate': round(float(forecast_rates[i]), 2),
+                'forecasted_positive_cases': round(float(forecast_cases[i]), 0),
+                'forecasted_total_tests': round(float(forecast_total[i]), 0),
                 'is_forecast': True
             })
         return forecast_data
