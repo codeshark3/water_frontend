@@ -9,8 +9,10 @@ interface ChartDataPoint {
   name: string;                    // Month name (e.g., "2023-01")
   total_tests?: number;            // Historical total tests
   positive_cases?: number;         // Historical positive cases
+  infection_rate?: number;         // Historical infection rate
   forecasted_total_tests?: number; // Predicted total tests
   forecasted_positive_cases?: number; // Predicted positive cases
+  forecasted_infection_rate?: number; // Predicted infection rate
   is_forecast?: boolean;           // Whether this is forecast data
 }
 
@@ -21,47 +23,67 @@ interface ChartCardProps {
   data?: ChartDataPoint[];         // Pre-provided data (optional)
 }
 
-// API response structure from Flask backend
-interface ForecastApiResponse {
-  disease_type: string;
-  historical_data: any[];
-  forecast_data: any[];
-  combined_data: any[];
-  source: string;
+// Color scheme for different metrics
+const metricColors = {
+  totalTests: "#3b82f6",    // Blue for total tests
+  positiveCases: "#22c55e", // Green for positive cases
+  infectionRate: "#f43f5e"  // Red for infection rate
+}
+
+// Disease labels
+const diseaseLabels = {
+  oncho: "Onchocerciasis",
+  schistosomiasis: "Schistosomiasis",
+  lf: "Lymphatic Filariasis",
+  helminths: "Soil-transmitted Helminths"
 }
 
 export default function ChartCard({ 
-  diseaseType, 
+  diseaseType = "oncho", 
   data, 
-  title = "Monthly Data" 
+  title 
 }: ChartCardProps) {
   // State for chart data and loading status
   const [chartData, setChartData] = useState<ChartDataPoint[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [noData, setNoData] = useState(false)
 
-  // Fetch forecast data from Flask API
+  // Get disease label
+  const diseaseLabel = diseaseLabels[diseaseType as keyof typeof diseaseLabels] || diseaseLabels.oncho
+  const defaultTitle = `${diseaseLabel} Trends`
+
+  // Fetch forecast data from API
   const fetchForecastData = async (disease: string) => {
     setLoading(true)
     setError(null)
+    setNoData(false)
     
     try {
-      const response = await fetch(`http://localhost:5238/flask-api/forecast/${disease}`)
+      const response = await fetch(`/api/forecast?disease=${disease}`)
       
       if (!response.ok) {
         throw new Error(`Failed to fetch forecast data: ${response.status}`)
       }
       
-      const result: ForecastApiResponse = await response.json()
+      const { data: result, status } = await response.json()
       
-      // Transform API data to chart format
-      const transformedData = result.combined_data.map((item: any) => ({
-        name: item.month,                                    // Month as chart label
-        total_tests: item.total_tests || null,               // Historical tests
-        positive_cases: item.positive_cases || null,         // Historical cases
-        forecasted_total_tests: item.forecasted_total_tests || null,     // Predicted tests
-        forecasted_positive_cases: item.forecasted_positive_cases || null, // Predicted cases
-        is_forecast: item.is_forecast                        // Forecast flag
+      if (status === "no_data") {
+        setNoData(true)
+        setChartData([])
+        return
+      }
+      
+      // Transform database data to chart format
+      const transformedData = result.map((item: any) => ({
+        name: item.month,
+        total_tests: item.totalTests || null,
+        positive_cases: item.positiveCases || null,
+        infection_rate: item.infectionRate || null,
+        forecasted_total_tests: item.forecastedTotalTests || null,
+        forecasted_positive_cases: item.forecastedPositiveCases || null,
+        forecasted_infection_rate: item.forecastedInfectionRate || null,
+        is_forecast: item.isForecast
       }))
       
       setChartData(transformedData)
@@ -96,7 +118,7 @@ export default function ChartCard({
     return (
       <Card className="w-full min-w-[8rem]">
         <CardHeader>
-          <CardTitle>{title}</CardTitle>
+          <CardTitle>{title || defaultTitle}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center h-[300px]">
@@ -112,7 +134,7 @@ export default function ChartCard({
     return (
       <Card className="w-full min-w-[8rem]">
         <CardHeader>
-          <CardTitle>{title}</CardTitle>
+          <CardTitle>{title || defaultTitle}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center h-[300px]">
@@ -123,56 +145,100 @@ export default function ChartCard({
     )
   }
 
+  // No data state
+  if (noData) {
+    return (
+      <Card className="w-full min-w-[8rem]">
+        <CardHeader>
+          <CardTitle>{title || defaultTitle}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center h-[300px]">
+            <div className="text-muted-foreground">
+              No forecast data available for {diseaseLabel}. Please generate forecasts first.
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
   // Main chart component
   return (
     <Card className="w-full min-w-[8rem]">
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <CardTitle>{title || defaultTitle}</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartData}>
             {/* Chart axes */}
             <XAxis dataKey="name" />
-            <YAxis />
+            <YAxis yAxisId="left" />
+            <YAxis yAxisId="right" orientation="right" />
             <Tooltip />
             <Legend />
             
             {/* Historical Data - Solid Lines */}
             <Line
+              yAxisId="left"
               type="monotone"
               dataKey="total_tests"
-              stroke="#3b82f6"        // Blue color
+              stroke={metricColors.totalTests}
               strokeWidth={2}
               name="Total Tests"
               dot={false}
+              opacity={0.7}
             />
             <Line
+              yAxisId="left"
               type="monotone"
               dataKey="positive_cases"
-              stroke="#22c55e"        // Green color
+              stroke={metricColors.positiveCases}
               strokeWidth={2}
               name="Positive Cases"
+              dot={false}
+            />
+            <Line
+              yAxisId="right"
+              type="monotone"
+              dataKey="infection_rate"
+              stroke={metricColors.infectionRate}
+              strokeWidth={2}
+              name="Infection Rate (%)"
               dot={false}
             />
             
             {/* Forecasted Data - Dashed Lines */}
             <Line
+              yAxisId="left"
               type="monotone"
               dataKey="forecasted_total_tests"
-              stroke="#3b82f6"        // Same blue as historical
-              strokeDasharray="5 5"   // Dashed line pattern
+              stroke={metricColors.totalTests}
+              strokeDasharray="5 5"
               strokeWidth={2}
               name="Forecasted Total Tests"
               dot={false}
+              opacity={0.7}
             />
             <Line
+              yAxisId="left"
               type="monotone"
               dataKey="forecasted_positive_cases"
-              stroke="#22c55e"        // Same green as historical
-              strokeDasharray="5 5"   // Dashed line pattern
+              stroke={metricColors.positiveCases}
+              strokeDasharray="5 5"
               strokeWidth={2}
               name="Forecasted Positive Cases"
+              dot={false}
+            />
+            <Line
+              yAxisId="right"
+              type="monotone"
+              dataKey="forecasted_infection_rate"
+              stroke={metricColors.infectionRate}
+              strokeDasharray="5 5"
+              strokeWidth={2}
+              name="Forecasted Infection Rate (%)"
               dot={false}
             />
           </LineChart>

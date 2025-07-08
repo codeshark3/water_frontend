@@ -1,6 +1,6 @@
 import { db } from "./db";
-import { tests } from "./db/schema";
-import { sql } from "drizzle-orm";
+import { tests, forecasts } from "./db/schema";
+import { sql, eq, desc } from "drizzle-orm";
 
 export async function getDiseaseStats() {
   // Get total tests
@@ -89,4 +89,32 @@ export async function getDiseaseStats() {
       rate: recentStats?.recent_tests ? ((recentStats.recent_positives / recentStats.recent_tests) * 100).toFixed(1) : '0'
     }
   };
+}
+
+export async function getForecastData(diseaseType: string) {
+  try {
+    const data = await db
+      .select({
+        month: forecasts.month,
+        isForecast: forecasts.isForecast,
+        totalTests: forecasts.totalTests,
+        positiveCases: forecasts.positiveCases,
+        infectionRate: forecasts.infectionRate,
+        forecastedTotalTests: forecasts.forecastedTotalTests,
+        forecastedPositiveCases: forecasts.forecastedPositiveCases,
+        forecastedInfectionRate: forecasts.forecastedInfectionRate,
+      })
+      .from(forecasts)
+      .where(eq(forecasts.diseaseType, diseaseType))
+      .orderBy(forecasts.month);
+
+    if (!data || data.length === 0) {
+      return null;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error fetching forecast data:', error);
+    throw error;
+  }
 } 

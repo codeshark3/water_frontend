@@ -98,7 +98,7 @@ export default async function authMiddleware(request: NextRequest) {
     if (isPublicRoute || isStaffRoute) {
       return NextResponse.next();
     }
-    return NextResponse.redirect(new URL("/staff", request.url));
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   // Admin can access public and admin routes only
@@ -106,7 +106,7 @@ export default async function authMiddleware(request: NextRequest) {
     if (isPublicRoute || isAdminRoute || isStaffRoute || isDynamicTestRoute) {
       return NextResponse.next();
     }
-    return NextResponse.redirect(new URL("/admin", request.url));
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   

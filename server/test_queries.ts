@@ -19,7 +19,21 @@ export async function insertTest(test: typeof tests.$inferInsert) {
 }
 
 export async function getTests() {
-    const test =  await db.select().from(tests)
+    const test = await db.select({
+        id: tests.id,
+        name: tests.name,
+        gender: tests.gender,
+        age: tests.age,
+        location: tests.location,
+        date: tests.date,
+        userId: tests.userId,
+        oncho: tests.oncho,
+        schistosomiasis: tests.schistosomiasis,
+        lf: tests.lf,
+        helminths: tests.helminths,
+        createdAt: tests.createdAt,
+        updatedAt: tests.updatedAt
+    }).from(tests);
 
     if (!test) return null;
     return test;
@@ -153,7 +167,7 @@ export async function insertFromCSV(filePath: string) {
                 age: row.age ? parseInt(row.age, 10) : null,
                 location: row.location || null,
                 date: parsedDate || null, // Use parsed date or null
-                userId: "Lwt9Yg4HCGUF6DNdcsBjT", // Use default if not provided
+                userId: "vrUTe8M2mdQAfXkX6VIO8ltNDrmZpB0h", // Use default if not provided
                 oncho: row.oncho || null,
                 schistosomiasis: row.schistosomiasis || row.schisto || null, // Handle both column names
                 lf: row.lf || null,

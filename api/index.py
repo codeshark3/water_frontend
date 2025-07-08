@@ -22,7 +22,8 @@ app.logger.setLevel(logging.INFO)
 
 # Database configuration using hardcoded URL
 def get_db_config():
-    postgres_url = "postgresql://postgres:source20@localhost:5432/postgres"
+    #postgres_url = "postgresql://postgres:source20@localhost:5432/postgres"
+    postgres_url="postgres://default:Hm3LiYyWXEj0@ep-divine-queen-a46g3ush-pooler.us-east-1.aws.neon.tech/verceldb?sslmode=require"
     try:
         parsed = urllib.parse.urlparse(postgres_url)
         db_config = {
@@ -49,7 +50,7 @@ def get_db_connection():
         logger.error(f"Database connection error: {e}")
         return None
 
-def get_disease_data(disease_type, months=6):
+def get_disease_data(disease_type, months=12):
     try:
         conn = get_db_connection()
         if not conn:
@@ -161,12 +162,12 @@ def save_forecast_to_db(disease_type, forecast_data, historical_data):
         for row in forecast_data:
             cursor.execute("""
                 INSERT INTO water_ml_forecasts 
-                (id, "diseaseType", month, "isForecast", "forecastedInfectionRate", "forecastedPositiveCases", "forecastedtotaltests", "createdAt", "updatedAt")
+                (id, "diseaseType", month, "isForecast", "forecastedInfectionRate", "forecastedPositiveCases", "forecastedTotalTests", "createdAt", "updatedAt")
                 VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
                 ON CONFLICT (id) DO UPDATE SET
                 "forecastedInfectionRate" = EXCLUDED."forecastedInfectionRate",
                 "forecastedPositiveCases" = EXCLUDED."forecastedPositiveCases",
-                "forecastedtotaltests" = EXCLUDED."forecastedtotaltests",
+                "forecastedTotalTests" = EXCLUDED."forecastedTotalTests",
                 "updatedAt" = NOW()
             """, (
                 f"{disease_type}_{row['month']}_forecast",
@@ -203,7 +204,7 @@ def get_forecast_from_db(disease_type):
                 "infectionRate",
                 "forecastedInfectionRate",
                 "forecastedPositiveCases",
-                "forecastedtotaltests"
+                "forecastedTotalTests"
             FROM water_ml_forecasts 
             WHERE "diseaseType" = %s
             ORDER BY month
@@ -221,7 +222,7 @@ def get_forecast_from_db(disease_type):
                     'month': row['month'],
                     'forecasted_infection_rate': row['forecastedInfectionRate'],
                     'forecasted_positive_cases': row['forecastedPositiveCases'],
-                    'forecasted_total_tests': row['forecastedtotaltests'],
+                    'forecasted_total_tests': row['forecastedTotalTests'],
                     'is_forecast': True
                 })
             else:
