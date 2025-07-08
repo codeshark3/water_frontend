@@ -4,22 +4,25 @@ import type { Session } from "~/lib/auth";
 import { auth } from "~/lib/auth";
 // Type for route matching
 const publicRoutes = [
-  "/",
+ 
 '/flask-api/python',
-"/tests"
+
 ];
 const authRoutes = ["/sign-in", "/sign-up"];
 const passwordRoutes = ["/reset-password", "/forgot-password"];
 const staffRoutes = [
   "/staff",
-  //"/tests",
+  "/tests",
   "/datasets/create",
   "/datasets/update/:id*",
  "/dashboard",
   "/tests/[id]",
+  "/",
 ];
 const adminRoutes = [
+  "/",
   "/admin",
+  '/tests',
   "/admin/users",
   "/admin/users/new",
   "/admin/users/[id]",
