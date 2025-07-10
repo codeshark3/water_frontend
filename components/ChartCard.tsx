@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts"
 import { useEffect, useState } from "react"
+import { getForecastData } from "~/server/dashboard_queries"
 
 // Types for chart data structure
 interface ChartDataPoint {
@@ -60,13 +61,14 @@ export default function ChartCard({
     setNoData(false)
     
     try {
-      const response = await fetch(`/api/forecast?disease=${disease}`)
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch forecast data: ${response.status}`)
+      const response = await getForecastData(disease)
+      //const response = await fetch(`/api/forecast?disease=${disease}`)
+    
+      if (!response?.data) {
+        throw new Error(`Failed to fetch forecast data: ${response?.status}`)
       }
       
-      const { data: result, status } = await response.json()
+      const { data: result, status } = response
       
       if (status === "no_data") {
         setNoData(true)

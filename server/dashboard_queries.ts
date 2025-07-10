@@ -109,10 +109,10 @@ export async function getForecastData(diseaseType: string) {
       .orderBy(forecasts.month);
 
     if (!data || data.length === 0) {
-      return null;
+      return {data: null, status: "no_data"};
     }
 
-    return data;
+    return {data, status: "success"};
   } catch (error) {
     console.error('Error fetching forecast data:', error);
     throw error;
