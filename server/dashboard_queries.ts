@@ -1,3 +1,4 @@
+"use server";
 import { db } from "./db";
 import { tests, forecasts } from "./db/schema";
 import { sql, eq, desc } from "drizzle-orm";

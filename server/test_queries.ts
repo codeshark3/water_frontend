@@ -7,7 +7,7 @@ import { and, eq, desc, sql } from "drizzle-orm";
 import { SignInSchema,  } from "~/schemas/index";
 import type * as z from "zod";
 import { headers } from "next/headers";
-import { promises as fs } from 'fs';
+
 import path from 'path';
 import { auth } from "~/lib/auth";
 // import { validateRequest } from "~/auth";
@@ -63,29 +63,19 @@ export async function getTopLocationByCount() {
 
 
 
-export async function insertFromCSV(filePath: string) {
-    const session = await auth.api.getSession({
-        headers: await headers(),
-      });
-      if (!session?.user?.id) throw new Error("Unauthorized");
-  const userId = session?.user?.id;
+export async function insertFromCSVString(csvData: string, userId: string) {
     try {
-        // Read the CSV file
-        const csvData = await fs.readFile(filePath, 'utf-8');
-        
         const lines = csvData.trim().split("\n");
         if (lines.length === 0) {
-            throw new Error('CSV file is empty');
+            throw new Error('CSV data is empty');
         }
 
         const firstLine = lines[0];
         if (!firstLine) {
-            throw new Error('CSV file has no headers');
+            throw new Error('CSV data has no headers');
         }
 
         const headers = firstLine.split(",").map(h => h.trim());
-        console.log('CSV headers:', headers);
-    
         const rows = lines.slice(1).map((line) => {
             const values = line.split(",").map(v => v.trim());
             if (values.length !== headers.length) {
@@ -97,8 +87,7 @@ export async function insertFromCSV(filePath: string) {
             });
             return row;
         });
-    
-        // Convert to match our schema with column mapping
+
         const formattedRows = rows.map((row, index) => {
             // Parse date field
             let parsedDate: Date | null = null;
@@ -167,7 +156,7 @@ export async function insertFromCSV(filePath: string) {
                 age: row.age ? parseInt(row.age, 10) : null,
                 location: row.location || null,
                 date: parsedDate || null, // Use parsed date or null
-                userId: "vrUTe8M2mdQAfXkX6VIO8ltNDrmZpB0h", // Use default if not provided
+                userId: userId, // Use userId from parameter
                 oncho: row.oncho || null,
                 schistosomiasis: row.schistosomiasis || row.schisto || null, // Handle both column names
                 lf: row.lf || null,

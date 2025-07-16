@@ -10,7 +10,7 @@ const nextConfig = {
             : '/flask-api/',
       },
     ]
-  },
+  }
 }
 
 module.exports = nextConfig
