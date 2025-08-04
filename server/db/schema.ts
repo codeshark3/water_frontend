@@ -82,16 +82,33 @@ export const tests =createTable("tests", {
   gender: text("gender"),
   age: integer("age"),
   location: text("location"),
+  date: timestamp("date"),
   userId: text("userId")
     .notNull()
     .references(() => user.id),
   oncho: text("oncho"),
   schistosomiasis: text("schistosomiasis"),
+
   lf: text("lf"),
   helminths: text("helminths"),
   createdAt: timestamp("createdAt"),
   updatedAt: timestamp("updatedAt"),
 
+});
+
+export const forecasts = createTable("forecasts", {
+  id: text("id").primaryKey(),
+  diseaseType: text("diseaseType").notNull(), // 'oncho', 'schistosomiasis', 'lf', 'helminths'
+  month: text("month").notNull(), // Format: 'YYYY-MM'
+  isForecast: boolean("isForecast").notNull().default(false), // true for forecast data, false for historical
+  totalTests: integer("totalTests"), // Only for historical data
+  positiveCases: integer("positiveCases"), // Only for historical data
+  infectionRate: integer("infectionRate"), // Percentage, only for historical data
+  forecastedInfectionRate: integer("forecastedInfectionRate"), // Percentage, only for forecast data
+  forecastedPositiveCases: integer("forecastedPositiveCases"), // Only for forecast data
+  forecastedTotalTests: integer("forecastedTotalTests"), // Only for forecast data
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow(),
 });
 
 export const users = pgTable("users", {

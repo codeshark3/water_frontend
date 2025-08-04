@@ -1,33 +1,35 @@
 import { betterFetch } from "@better-fetch/fetch";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Session } from "~/lib/auth";
-
+import { auth } from "~/lib/auth";
 // Type for route matching
 const publicRoutes = [
-  "/",
 
-"/tests"
+'/flask-api/python',
+"/tests",
+"/",
+"/dashboard",
+"/tests/[id]",
 ];
 const authRoutes = ["/sign-in", "/sign-up"];
 const passwordRoutes = ["/reset-password", "/forgot-password"];
 const staffRoutes = [
   "/staff",
-  //"/tests",
+  "/tests",
   "/datasets/create",
   "/datasets/update/:id*",
- 
+ "/dashboard",
   "/tests/[id]",
+  "/",
 ];
 const adminRoutes = [
+  "/",
   "/admin",
+  '/tests',
   "/admin/users",
   "/admin/users/new",
   "/admin/users/[id]",
-  "/datasets/create",
-  "/datasets/update/:id*",
-  "/datasets",
-  "/datasets/delete/:id*",
-  "/access",
+
 ];
 
 export default async function authMiddleware(request: NextRequest) {
@@ -97,7 +99,7 @@ export default async function authMiddleware(request: NextRequest) {
     if (isPublicRoute || isStaffRoute) {
       return NextResponse.next();
     }
-    return NextResponse.redirect(new URL("/staff", request.url));
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   // Admin can access public and admin routes only
@@ -105,7 +107,7 @@ export default async function authMiddleware(request: NextRequest) {
     if (isPublicRoute || isAdminRoute || isStaffRoute || isDynamicTestRoute) {
       return NextResponse.next();
     }
-    return NextResponse.redirect(new URL("/admin", request.url));
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   

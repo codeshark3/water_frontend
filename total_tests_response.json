@@ -1,0 +1,34 @@
+﻿{
+  "diseases": [
+    {
+      "disease_type": "oncho",
+      "infection_rate": "50.60",
+      "positive_cases": 337,
+      "total_tests": 666
+    },
+    {
+      "disease_type": "schistosomiasis",
+      "infection_rate": "51.99",
+      "positive_cases": 365,
+      "total_tests": 702
+    },
+    {
+      "disease_type": "lf",
+      "infection_rate": "48.55",
+      "positive_cases": 336,
+      "total_tests": 692
+    },
+    {
+      "disease_type": "helminths",
+      "infection_rate": "51.62",
+      "positive_cases": 367,
+      "total_tests": 711
+    }
+  ],
+  "overall": {
+    "overall_infection_rate": 50.7,
+    "total_positive_cases": 1405,
+    "total_tests": 2771
+  }
+}
+

@@ -36,6 +36,7 @@
     "better-fetch": "^1.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
     "concurrently": "^7.6.0",
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.7",
@@ -58,6 +59,7 @@
     "tailwindcss": "^3.2.4",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.3.3",
+    "uuid": "^11.1.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

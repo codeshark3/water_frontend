@@ -42,7 +42,8 @@ export const columns: ColumnDef<Test>[] = [
       const name = row.getValue("name") as string;
       return (
         <div className="font-medium">
-          {name.length > 50 ? `${name.slice(0, 50)}...` : name}
+          {name}
+          {/* {name && name.length > 50 ? `${name.slice(0, 50)}...` : name || '-'} */}
         </div>
       );
     },
@@ -52,7 +53,7 @@ export const columns: ColumnDef<Test>[] = [
     header: "Gender",
     cell: ({ row }) => {
       return (
-        <div className="text-center font-medium">{row.getValue("gender")}</div>
+        <div className="  font-medium">{row.getValue("gender")}</div>
       );
     },
   },
@@ -64,7 +65,16 @@ export const columns: ColumnDef<Test>[] = [
       const age = (row.getValue("age") as number) || "";
      
       return (
-        <div className="text-center font-medium">{age}</div>
+        <div className="  font-medium">{age}</div>
+      );
+    },
+  },
+  {
+    accessorKey: "location",
+    header: "Location",
+    cell: ({ row }) => {
+      return (
+        <div className="  font-medium">{row.getValue("location")}</div>
       );
     },
   },
@@ -76,7 +86,7 @@ export const columns: ColumnDef<Test>[] = [
   //     const status = row.getValue("status") as string | null;
   //     return (
   //       <span
-  //         className={`rounded-md px-2 py-1 text-center text-sm font-medium ${
+  //         className={`rounded-md px-2 py-1   text-sm font-medium ${
   //           status === "approved"
   //             ? "bg-emerald-500 text-white"
   //             : status === "rejected"

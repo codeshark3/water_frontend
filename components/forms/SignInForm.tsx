@@ -49,7 +49,7 @@ const SignInForm = () => {
         onSuccess: (val) => {
         toast.success("Login Successful")
           form.reset();
-          router.push("/");
+          router.push("/dashboard");
           // if (val.data?.user?.role === "admin") {
           //   router.push("/admin");
           // }
