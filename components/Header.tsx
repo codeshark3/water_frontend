@@ -2,10 +2,7 @@
 
 import Link from "next/link";
 import React from "react";
-import { Button, buttonVariants } from "./ui/button";
-import { Input } from "./ui/input";
-import { Separator } from "./ui/separator";
-import { Search } from "lucide-react";
+
 import Image from "next/image";
 
 export default function Header() {
@@ -17,11 +14,7 @@ export default function Header() {
           <span className="text-xl font-bold">Water ML</span>
         </div>
         <div className="flex items-center gap-4">
-          <div className="relative">
-            <Link href="/dashboard" className="hover:text-primary transition-colors">
-              Dashboard
-            </Link>
-          </div>
+         
           <div className="relative">
             <Link href="/tests" className="hover:text-primary transition-colors">
               Tests

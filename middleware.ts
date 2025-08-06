@@ -6,6 +6,7 @@ import { auth } from "~/lib/auth";
 const publicRoutes = [
 
 '/flask-api/python',
+'/flask-api/get-mobile-data',
 "/tests",
 "/",
 "/dashboard",

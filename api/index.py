@@ -2,12 +2,19 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
 import logging
+import cv2
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 from datetime import datetime, timedelta
 import urllib.parse
+import uuid
+
+import numpy as np
+from PIL import Image
+
+
 
 # Configure logging
 logging.basicConfig(
@@ -372,6 +379,66 @@ def get_saved_forecasts(disease_type):
     except Exception as e:
         logger.error(f"Error fetching saved forecasts: {e}")
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/flask-api/get-mobile-data", methods=["POST"])
+def get_mobile_data():
+    if request.content_type.startswith("multipart/form-data"):
+        # Handle form data and files
+        form_data = request.form.to_dict()
+        files = {}
+        upload_dir = os.path.join(os.path.dirname(__file__), 'data')
+        print("Upload directory will be:", upload_dir)
+        try:
+            os.makedirs(upload_dir, exist_ok=True)
+        except Exception as e:
+            print("Failed to create upload directory:", e)
+            return jsonify({"error": f"Failed to create upload directory: {e}"}), 500
+        saved_files = {}
+        for key in request.files:
+            file = request.files[key]
+            ext = os.path.splitext(file.filename)[1] or '.jpg'
+            unique_filename = f"{uuid.uuid4().hex}{ext}"
+            file_path = os.path.join(upload_dir, unique_filename)
+            file.save(file_path)
+            files[key] = {
+                "filename": file.filename,
+                "content_type": file.content_type,
+                "saved_path": file_path
+            }
+            saved_files[key] = file_path
+        print("Form data:", form_data)
+        print("Files:", files)
+
+        def get_contour_value(img):
+ 
+            # img=cv2.imread(pil_img)
+            img = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+
+            img = cv2.inRange(img, (150, 60, 100), (255, 255, 255))
+
+            kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (11,11))
+
+            img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel, 6)
+
+            contours, hier = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            contour_value = len(contours)
+            print (contour_value)
+            return contour_value
+        
+        for key in saved_files:
+            img = cv2.imread(saved_files[key])
+            contour_value = get_contour_value(img)
+            print(contour_value)
+
+        return jsonify({"message": "Data received successfully (multipart)", "form": form_data, "files": files, "saved_files": saved_files}), 200
+    elif request.is_json:
+        data = request.get_json()
+        print("JSON data:", data)
+        return jsonify({"message": "Data received successfully (json)", "data": data}), 200
+    else:
+        return jsonify({"error": "Unsupported Content-Type"}), 4
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5238, debug=True)
