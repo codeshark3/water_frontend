@@ -30,7 +30,9 @@ export async function getUsers() {
 
   const projects = await db.query.user.findMany({
     // where: (model, { eq }) => eq(model.userId, user.userId),
+    // where: (model, { eq }) => eq(model.banned, false),
     orderBy: (model, { desc }) => desc(model.id),
+
   });
 
   return projects;

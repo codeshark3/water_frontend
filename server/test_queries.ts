@@ -33,7 +33,7 @@ export async function getTests() {
         helminths: tests.helminths,
         createdAt: tests.createdAt,
         updatedAt: tests.updatedAt
-    }).from(tests);
+    }).from(tests).orderBy(desc(tests.createdAt));
 
     if (!test) return null;
     return test;

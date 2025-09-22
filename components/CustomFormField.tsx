@@ -18,6 +18,9 @@ import { Textarea } from "~/components/ui/textarea";
 import { Input } from "~/components/ui/input";
 import { Control } from "react-hook-form";
 import { Checkbox } from "~/components/ui/checkbox";
+import { Button } from "~/components/ui/button";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 
 // import "react-phone-number-input/style.css";
 // import PhoneInput from "react-phone-number-input";
@@ -26,6 +29,55 @@ import { Checkbox } from "~/components/ui/checkbox";
 // import "react-datepicker/dist/react-datepicker.css";
 
 import Image from "next/image";
+
+// Password field component with show/hide functionality
+const PasswordField = ({ field, placeholder, iconSrc, iconAlt }: { 
+  field: any; 
+  placeholder?: string; 
+  iconSrc?: string; 
+  iconAlt?: string; 
+}) => {
+  const [showPassword, setShowPassword] = useState(false);
+
+  return (
+    <div className="relative">
+      <div className="border-dark-500 bg-dark-400 flex rounded-md border">
+        {iconSrc && (
+          <Image
+            src={iconSrc}
+            width={24}
+            height={24}
+            alt={iconAlt || "icon"}
+            className="ml-2 self-center"
+          />
+        )}
+        <FormControl className="flex-1">
+          <Input
+            placeholder={placeholder}
+            {...field}
+            type={showPassword ? "text" : "password"}
+            className="shad-input border-0 pr-10"
+          />
+        </FormControl>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent focus:ring-0 focus:ring-offset-0"
+          onClick={() => setShowPassword(!showPassword)}
+          aria-label={showPassword ? "Hide password" : "Show password"}
+        >
+          {showPassword ? (
+            <EyeOff className="h-4 w-4 text-gray-500 hover:text-gray-700" />
+          ) : (
+            <Eye className="h-4 w-4 text-gray-500 hover:text-gray-700" />
+          )}
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 export enum FormFieldType {
   INPUT = "input",
   PASSWORD = "password",
@@ -86,27 +138,7 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
         </div>
       );
     case FormFieldType.PASSWORD:
-      return (
-        <div className="border-dark-500 bg-dark-400 flex rounded-md border">
-          {iconSrc && (
-            <Image
-              src={iconSrc}
-              width={24}
-              height={24}
-              alt={iconAlt || "icon"}
-              className="ml-2"
-            />
-          )}
-          <FormControl className="">
-            <Input
-              placeholder={placeholder}
-              {...field}
-              type="password"
-              className="shad-input border-0"
-            />
-          </FormControl>
-        </div>
-      );
+      return <PasswordField field={field} placeholder={placeholder} iconSrc={iconSrc} iconAlt={iconAlt} />;
     case FormFieldType.ARRAY:
       return (
         <div className="border-dark-500 bg-dark-400 flex rounded-md border">

@@ -3,7 +3,7 @@ flask-cors==4.0.0
 pillow==10.0.1
 numpy
 pandas
-scikit-learn
+#scikit-learn
 opencv-python
 requests==2.31.0
 psycopg2-binary

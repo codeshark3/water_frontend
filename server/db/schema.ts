@@ -15,6 +15,7 @@ import {
   serial,
   pgTable,
   uuid,
+  jsonb,
 } from "drizzle-orm/pg-core";
 
 /**
@@ -127,3 +128,5 @@ export const sessions = pgTable("sessions", {
   expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
+
+// Mobile results are now saved directly to the tests table as the single source of truth

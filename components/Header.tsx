@@ -15,10 +15,14 @@ export default function Header() {
         </div>
         <div className="flex items-center gap-4">
          
-          <div className="relative">
+          <div className="relative flex items-center gap-4">
+          <Link href="/" className="hover:text-primary transition-colors">
+              Dashboard
+            </Link>
             <Link href="/tests" className="hover:text-primary transition-colors">
               Tests
             </Link>
+           
           </div>
         </div>
       </div>

@@ -9,7 +9,7 @@ const publicRoutes = [
 '/flask-api/get-mobile-data',
 "/tests",
 "/",
-"/dashboard",
+
 "/tests/[id]",
 ];
 const authRoutes = ["/sign-in", "/sign-up"];
@@ -19,18 +19,13 @@ const staffRoutes = [
   "/tests",
   "/datasets/create",
   "/datasets/update/:id*",
- "/dashboard",
   "/tests/[id]",
-  "/",
 ];
 const adminRoutes = [
-  "/",
   "/admin",
-  '/tests',
   "/admin/users",
   "/admin/users/new",
   "/admin/users/[id]",
-
 ];
 
 export default async function authMiddleware(request: NextRequest) {
@@ -71,15 +66,14 @@ export default async function authMiddleware(request: NextRequest) {
 
   try {
     const response = await betterFetch<Session>("/api/auth/get-session", {
-      baseURL: process.env.BETTER_AUTH_URL,
+      baseURL: process.env.BETTER_AUTH_URL || undefined,
       headers: { cookie: request.headers.get("cookie") || "" },
     });
-
-    if (!response || !response.data) {
+    if (response?.data) {
+      session = response.data;
+    } else {
       console.warn("Session fetch failed, response:", response);
     }
-
-    session = response?.data || null;
   } catch (error) {
     console.error("Failed to fetch session:", error);
   }
@@ -100,7 +94,11 @@ export default async function authMiddleware(request: NextRequest) {
     if (isPublicRoute || isStaffRoute) {
       return NextResponse.next();
     }
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    // Explicitly block admin routes for user role
+    if (isAdminRoute) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+    return NextResponse.next();
   }
 
   // Admin can access public and admin routes only
@@ -108,7 +106,7 @@ export default async function authMiddleware(request: NextRequest) {
     if (isPublicRoute || isAdminRoute || isStaffRoute || isDynamicTestRoute) {
       return NextResponse.next();
     }
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.next();
   }
 
   
