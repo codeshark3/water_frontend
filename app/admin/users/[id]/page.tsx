@@ -1,5 +1,5 @@
 import React from "react";
-import { getUser } from "~/app/src/server/queries";
+import { getUser } from "~/server/queries";
 
 type Props = { params: Promise<{ id: string }> };
 
