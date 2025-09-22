@@ -1,10 +1,13 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import CreateUserDialog from "~/components/CreateUserDialog";
 
-const page = () => {
-  return <CreateUserDialog isOpen={true} onClose={() => {}} />;
+const Page = () => {
+  const [open, setOpen] = useState(true);
+  return <CreateUserDialog isOpen={open} onClose={() => setOpen(false)} />;
 };
 
-export default page;
+export default Page;
 
 
