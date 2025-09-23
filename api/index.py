@@ -143,7 +143,7 @@ def send_to_drizzle(form_data: dict, analysis: dict):
         "helminths": analysis.get("helminths"),
     }
 
-    next_base = os.environ.get("https://water_frontend.vercel.app", "http://127.0.0.1:3000")
+    next_base = os.environ.get("NEXT_BASE_URL", "http://127.0.0.1:3000")
     url = f"{next_base}/api/mobile-results"
     
     # Log the request payload

@@ -10,6 +10,7 @@ const LoginSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  console.log("Mobile login request received");
   try {
     const json = await req.json();
     const { email, password } = LoginSchema.parse(json);
