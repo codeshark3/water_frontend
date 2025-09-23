@@ -79,6 +79,7 @@ export const verification = createTable("verification", {
 
 export const tests =createTable("tests", {
   id: text("id").primaryKey(),
+  participantId: text("participantId"), // Add participantId field
   name: text("name"),
   gender: text("gender"),
   age: integer("age"),
@@ -89,12 +90,10 @@ export const tests =createTable("tests", {
     .references(() => user.id),
   oncho: text("oncho"),
   schistosomiasis: text("schistosomiasis"),
-
   lf: text("lf"),
   helminths: text("helminths"),
   createdAt: timestamp("createdAt"),
   updatedAt: timestamp("updatedAt"),
-
 });
 
 export const forecasts = createTable("forecasts", {

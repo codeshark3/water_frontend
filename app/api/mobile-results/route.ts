@@ -60,6 +60,7 @@ export async function POST(req: NextRequest) {
 
     await db.insert(tests).values({
       id,
+      participantId: data.participantId ?? null,
       name: data.name ?? null,
       gender: data.gender ?? null,
       age: data.age ?? null,

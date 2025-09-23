@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
       gender: test.gender,
       age: test.age,
       location: test.location,
-      participantId: test.id, // Using test ID as participant ID for mobile compatibility
+      participantId: test.participantId || test.id, // Use participantId if available, fallback to id
       userId: test.userId,
       oncho: test.oncho,
       schistosomiasis: test.schistosomiasis,

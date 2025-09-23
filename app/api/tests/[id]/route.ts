@@ -85,7 +85,28 @@ export async function GET(
       return NextResponse.json({ error: "Test not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ data: test[0] });
+    const testData = test[0];
+    
+    // Format the response to match mobile app expectations
+    const formattedTest = {
+      id: testData.id,
+      name: testData.name,
+      gender: testData.gender,
+      age: testData.age,
+      location: testData.location,
+      participantId: testData.participantId || testData.id, // Use participantId if available, fallback to id
+      userId: testData.userId,
+      oncho: testData.oncho,
+      schistosomiasis: testData.schistosomiasis,
+      lf: testData.lf,
+      helminths: testData.helminths,
+      createdAt: testData.createdAt?.toISOString(),
+      updatedAt: testData.updatedAt?.toISOString(),
+      syncStatus: "synced",
+      createdBy: testData.userId,
+    };
+
+    return NextResponse.json({ data: formattedTest });
 
   } catch (error) {
     console.error("Error fetching test:", error);
