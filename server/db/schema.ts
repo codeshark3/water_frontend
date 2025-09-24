@@ -111,21 +111,4 @@ export const forecasts = createTable("forecasts", {
   updatedAt: timestamp("updatedAt").defaultNow(),
 });
 
-export const users = pgTable("users", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  name: varchar("name", { length: 255 }),
-  email: varchar("email", { length: 255 }).unique().notNull(),
-  password: text("password").notNull(),
-  role: varchar("role", { length: 50 }).default("user"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-export const sessions = pgTable("sessions", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
-  expiresAt: timestamp("expires_at").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
 // Mobile results are now saved directly to the tests table as the single source of truth

@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const limit = url.searchParams.get("limit");
     const offset = url.searchParams.get("offset");
 
-    let query = db.select().from(tests);
+    let query = db.select().from(tests).$dynamic();
 
     // Filter by user if userId provided
     if (userId) {

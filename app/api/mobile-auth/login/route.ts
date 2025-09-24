@@ -12,7 +12,35 @@ const LoginSchema = z.object({
 export async function POST(req: NextRequest) {
   console.log("Mobile login request received - deployed version");
   try {
-    const json = await req.json();
+    // Check if request has body
+    const contentType = req.headers.get("content-type");
+    console.log("Content-Type:", contentType);
+    
+    if (!contentType || !contentType.includes("application/json")) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: "Content-Type must be application/json" 
+        }, 
+        { status: 400 }
+      );
+    }
+
+    let json;
+    try {
+      json = await req.json();
+      console.log("Request body:", json);
+    } catch (parseError) {
+      console.error("JSON parse error:", parseError);
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: "Invalid JSON in request body" 
+        }, 
+        { status: 400 }
+      );
+    }
+
     const { email, password } = LoginSchema.parse(json);
 
     // Find user by email
