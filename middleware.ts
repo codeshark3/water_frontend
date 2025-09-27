@@ -4,23 +4,26 @@ import type { Session } from "~/lib/auth";
 import { auth } from "~/lib/auth";
 // Type for route matching
 const publicRoutes = [
-  "/",
+  
   "/flask-api/python",
   "/flask-api/get-mobile-data",
-  "/tests/[id]",
+ 
 ];
 const authRoutes = ["/sign-in", "/sign-up"];
 const passwordRoutes = ["/reset-password", "/forgot-password"];
 const userRoutes = [
+  "/",
   "/user",
   "/tests",
   "/tests/[id]",
 ];
 const adminRoutes = [
+  "/",
   "/admin",
   "/admin/users",
   "/admin/users/new",
   "/admin/users/[id]",
+  "/tests/[id]",
 ];
 
 export default async function authMiddleware(request: NextRequest) {
