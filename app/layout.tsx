@@ -38,7 +38,15 @@ export default function RootLayout({
           <div className="fixed bottom-4 right-4 z-50">
             <ModeToggle />
           </div>{" "}
-          <Toaster />
+          <Toaster theme="system"  toastOptions={{
+    classNames: {
+      toast: "bg-gray-900 text-white border border-gray-700",
+      title: "font-bold",
+      description: "text-gray-300",
+      actionButton: "bg-indigo-600 hover:bg-indigo-700",
+      cancelButton: "bg-gray-600 hover:bg-gray-700"
+    }
+  }}/>
         </ThemeProvider>
       </body>
     </html>

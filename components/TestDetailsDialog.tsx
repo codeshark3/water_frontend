@@ -110,8 +110,14 @@ export default function TestDetailsDialog({
                 <p className="text-xs font-mono">{test.id}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-500">User ID</label>
-                <p className="text-xs font-mono">{test.userId}</p>
+                <label className="text-sm font-medium text-gray-500">Created By</label>
+                <p className="text-sm">
+                  {test.createdByName && test.createdByName.trim() ? (
+                    test.createdByName
+                  ) : (
+                    <span className="text-gray-400 font-mono text-xs">{test.userId}</span>
+                  )}
+                </p>
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-500">Created At</label>

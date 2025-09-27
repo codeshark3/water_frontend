@@ -88,6 +88,7 @@ export const tests =createTable("tests", {
   userId: text("userId")
     .notNull()
     .references(() => user.id),
+  createdByName: text("createdByName"), // Store the user name who created the test
   oncho: text("oncho"),
   schistosomiasis: text("schistosomiasis"),
   lf: text("lf"),
@@ -106,7 +107,7 @@ export const forecasts = createTable("forecasts", {
   infectionRate: integer("infectionRate"), // Percentage, only for historical data
   forecastedInfectionRate: integer("forecastedInfectionRate"), // Percentage, only for forecast data
   forecastedPositiveCases: integer("forecastedPositiveCases"), // Only for forecast data
-  forecastedTotalTests: integer("forecastedTotalTests"), // Only for forecast data
+  forecastedtotaltests: integer("forecastedtotaltests"), // Only for forecast data
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow(),
 });

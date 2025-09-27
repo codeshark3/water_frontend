@@ -101,7 +101,7 @@ export async function getForecastData(diseaseType: string) {
         totalTests: forecasts.totalTests,
         positiveCases: forecasts.positiveCases,
         infectionRate: forecasts.infectionRate,
-        forecastedTotalTests: forecasts.forecastedTotalTests,
+        forecastedTotalTests: forecasts.forecastedtotaltests,
         forecastedPositiveCases: forecasts.forecastedPositiveCases,
         forecastedInfectionRate: forecasts.forecastedInfectionRate,
       })

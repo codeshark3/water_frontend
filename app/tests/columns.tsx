@@ -16,6 +16,7 @@ export type Test = {
   age: number;
   location: string;
   userId: string;
+  createdByName?: string | null;
   oncho: string;
   schistosomiasis: string;
   lf: string;

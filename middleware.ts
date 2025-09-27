@@ -4,21 +4,16 @@ import type { Session } from "~/lib/auth";
 import { auth } from "~/lib/auth";
 // Type for route matching
 const publicRoutes = [
-
-'/flask-api/python',
-'/flask-api/get-mobile-data',
-"/tests",
-"/",
-
-"/tests/[id]",
+  "/",
+  "/flask-api/python",
+  "/flask-api/get-mobile-data",
+  "/tests/[id]",
 ];
 const authRoutes = ["/sign-in", "/sign-up"];
 const passwordRoutes = ["/reset-password", "/forgot-password"];
-const staffRoutes = [
-  "/staff",
+const userRoutes = [
+  "/user",
   "/tests",
-  "/datasets/create",
-  "/datasets/update/:id*",
   "/tests/[id]",
 ];
 const adminRoutes = [
@@ -40,7 +35,7 @@ export default async function authMiddleware(request: NextRequest) {
    
   const isAuthRoute = authRoutes.includes(pathName);
   const isPasswordRoute = passwordRoutes.includes(pathName);
-  const isStaffRoute = staffRoutes.includes(pathName);
+  const isUserRoute = userRoutes.includes(pathName);
   const isDynamicAdminRoute = /^\/admin\/[^\/]+/.test(pathName);
   const isAdminRoute = adminRoutes.includes(pathName) || isDynamicAdminRoute;
 
@@ -54,8 +49,8 @@ export default async function authMiddleware(request: NextRequest) {
     isPublicRoute,
     "isAdmin:",
     isAdminRoute,
-    "isStaff:",
-    isStaffRoute,
+    "isUser:",
+    isUserRoute,
   
   );
   console.log("Middleware Path:", request.nextUrl.pathname);
@@ -89,9 +84,15 @@ export default async function authMiddleware(request: NextRequest) {
   // If authenticated, restrict access based on role
   const { role } = session.user;
 
-  // Staff can access public and staff routes only
+
+  // If authenticated user tries to access auth pages, redirect to home
+  if (session && (isAuthRoute || isPasswordRoute)) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  // User can access public and user routes only
   if (role === "user") {
-    if (isPublicRoute || isStaffRoute) {
+    if (isPublicRoute || isUserRoute) {
       return NextResponse.next();
     }
     // Explicitly block admin routes for user role
@@ -103,7 +104,7 @@ export default async function authMiddleware(request: NextRequest) {
 
   // Admin can access public and admin routes only
   if (role === "admin") {
-    if (isPublicRoute || isAdminRoute || isStaffRoute || isDynamicTestRoute) {
+    if (isPublicRoute || isAdminRoute || isUserRoute || isDynamicTestRoute) {
       return NextResponse.next();
     }
     return NextResponse.next();

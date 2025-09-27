@@ -10,7 +10,7 @@ const LoginSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  console.log("Mobile login request received - deployed version");
+
   try {
     // Check if request has body
     const contentType = req.headers.get("content-type");

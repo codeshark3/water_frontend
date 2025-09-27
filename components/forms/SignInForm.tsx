@@ -44,7 +44,7 @@ const SignInForm = () => {
       // callbackURL: "/",
       fetchOptions: {
         onRequest: () => {
-         toast.loading("Requesting...")
+         toast.loading("Requesting...", { duration: 3000 })
         },
         onSuccess: (val) => {
         toast.success("Login Successful")
@@ -69,7 +69,7 @@ const SignInForm = () => {
         },
       },
     });
-    console.log(values);
+   
   }
 
   return (

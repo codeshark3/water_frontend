@@ -1,0 +1,52 @@
+{
+  "timestamp": "2025-09-24T01:54:28.382154",
+  "patient_data": {
+    "participantId": "f24264bf80ff44829b67dd81c35423fa",
+    "name": "Ama",
+    "age": "60",
+    "gender": "female",
+    "location": "Accra",
+    "createdBy": "jobaff03@gmail.com",
+    "existingTestId": "7b30c585509b417a889318a9f65c4826",
+    "userId": "YMkYwv0Wi0BtNFLVguFsMeqDXnegUUN4"
+  },
+  "image_analysis": {
+    "helminthImage": {
+      "filename": "helminth.jpg",
+      "content_type": "image/jpeg",
+      "line_count": 2,
+      "orientation": "vertical",
+      "line_positions": [
+        0.2663316582914573,
+        0.4020100502512563
+      ],
+      "line_indices": [
+        53,
+        80
+      ],
+      "line_strengths": [
+        14280.0,
+        14025.0
+      ],
+      "intensities": [
+        85.5029296875,
+        86.20580291748047
+      ],
+      "control_present": true,
+      "test_present": true,
+      "tc_ratio": 1.0082204460634145,
+      "confidence": 0.1283049999999717,
+      "roi": {
+        "roi_method": "fallback",
+        "roi_box": [
+          55,
+          26,
+          113,
+          101
+        ]
+      },
+      "debug_image": null,
+      "contour_value": 2
+    }
+  }
+}

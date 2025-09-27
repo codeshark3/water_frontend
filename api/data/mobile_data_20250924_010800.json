@@ -1,0 +1,51 @@
+{
+  "timestamp": "2025-09-24T01:08:00.156444",
+  "patient_data": {
+    "participantId": "ml_process_1758676077510",
+    "name": "ML Processing",
+    "age": "25",
+    "gender": "unknown",
+    "location": "processing",
+    "createdAt": "2025-09-24T01:07:57.513Z",
+    "createdBy": "mobile_ml"
+  },
+  "image_analysis": {
+    "helminthImage": {
+      "filename": "helminth.jpg",
+      "content_type": "image/jpeg",
+      "line_count": 2,
+      "orientation": "vertical",
+      "line_positions": [
+        0.19597989949748743,
+        0.6432160804020101
+      ],
+      "line_indices": [
+        39,
+        128
+      ],
+      "line_strengths": [
+        23205.0,
+        24225.0
+      ],
+      "intensities": [
+        88.12747192382812,
+        89.41484069824219
+      ],
+      "control_present": true,
+      "test_present": true,
+      "tc_ratio": 1.0146080187222297,
+      "confidence": 0.14742999999995257,
+      "roi": {
+        "roi_method": "fallback",
+        "roi_box": [
+          39,
+          18,
+          80,
+          71
+        ]
+      },
+      "debug_image": null,
+      "contour_value": 2
+    }
+  }
+}
