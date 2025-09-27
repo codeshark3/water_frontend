@@ -31,7 +31,7 @@ export default async function authMiddleware(request: NextRequest) {
   // Check if the request path matches any of the defined routes
   const isPublicRoute =
     publicRoutes.includes(pathName) ||
-    isDynamicTestRoute 
+    isDynamicTestRoute;
    
   const isAuthRoute = authRoutes.includes(pathName);
   const isPasswordRoute = passwordRoutes.includes(pathName);
@@ -61,7 +61,7 @@ export default async function authMiddleware(request: NextRequest) {
 
   try {
     const response = await betterFetch<Session>("/api/auth/get-session", {
-      baseURL: process.env.BETTER_AUTH_URL || undefined,
+      baseURL: process.env.BETTER_AUTH_URL || request.nextUrl.origin,
       headers: { cookie: request.headers.get("cookie") || "" },
     });
     if (response?.data) {

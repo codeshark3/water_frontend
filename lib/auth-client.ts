@@ -3,7 +3,7 @@ import { adminClient } from "better-auth/client/plugins";
 
 export const authClient = createAuthClient({
 
-  baseUrl: process.env.BETTER_AUTH_URL,
+  baseUrl: process.env.BETTER_AUTH_URL || "https://waterfrontend.vercel.app",
   plugins: [adminClient()],
 });
 
