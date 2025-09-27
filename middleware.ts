@@ -60,8 +60,9 @@ export default async function authMiddleware(request: NextRequest) {
   let session: Session | null = null;
 
   try {
+    console.log("BETTER_AUTH_URL:", process.env.BETTER_AUTH_URL);
     const response = await betterFetch<Session>("/api/auth/get-session", {
-      baseURL: process.env.BETTER_AUTH_URL || request.nextUrl.origin,
+      baseURL: process.env.BETTER_AUTH_URL,
       headers: { cookie: request.headers.get("cookie") || "" },
     });
     if (response?.data) {
