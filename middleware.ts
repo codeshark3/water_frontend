@@ -65,7 +65,7 @@ export default async function authMiddleware(request: NextRequest) {
   try {
     console.log("BETTER_AUTH_URL:", process.env.BETTER_AUTH_URL);
     const response = await betterFetch<Session>("/api/auth/get-session", {
-      baseURL: process.env.BETTER_AUTH_URL,
+      baseURL: request.nextUrl.origin, // Use the same domain as the request
       headers: { cookie: request.headers.get("cookie") || "" },
     });
     if (response?.data) {
@@ -120,5 +120,5 @@ export default async function authMiddleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
+  matcher: ["/((?!api|flask-api|_next/static|_next/image|.*\\.png$).*)"],
 };
