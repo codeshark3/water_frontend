@@ -61,18 +61,33 @@ export async function POST(req: NextRequest) {
     // For now, we'll skip password validation since we don't have hashed passwords
     // In production, you would validate with: await bcrypt.compare(password, foundUser.password)
     
-    return NextResponse.json({
+    // Create session data
+    const sessionData = {
+      id: foundUser.id,
+      email: foundUser.email,
+      name: foundUser.name,
+      role: foundUser.role,
+      emailVerified: foundUser.emailVerified,
+      createdAt: foundUser.createdAt.toISOString(),
+      updatedAt: foundUser.updatedAt.toISOString(),
+    };
+
+    // Create response with session cookie
+    const response = NextResponse.json({
       success: true,
-      user: {
-        id: foundUser.id,
-        email: foundUser.email,
-        name: foundUser.name,
-        role: foundUser.role,
-        emailVerified: foundUser.emailVerified,
-        createdAt: foundUser.createdAt.toISOString(),
-        updatedAt: foundUser.updatedAt.toISOString(),
-      }
+      user: sessionData
     });
+
+    // Set session cookie (expires in 7 days)
+    response.cookies.set('user-session', JSON.stringify(sessionData), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/',
+    });
+
+    return response;
 
   } catch (error: any) {
     console.error("Mobile login error:", error);
