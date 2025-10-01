@@ -46,20 +46,18 @@ export async function POST(req: NextRequest) {
 
     // Resolve user ID for foreign key reference
     let userId: string;
-    if (data.userId) {
-      // Direct user ID provided (preferred method)
-      userId = data.userId;
-    } else if (data.createdBy) {
-      // Look up user by email
-      const owner = await db.query.user.findFirst({ where: (m, { eq }) => eq(m.email, data.createdBy!) });
-      if (!owner) {
-        return NextResponse.json({ ok: false, error: "User not found for createdBy email" }, { status: 400 });
-      }
-      userId = owner.id;
-    } else {
-      // Fallback to participantId if no user info provided
-      userId = data.participantId || "unknown_user";
-    }
+    userId ="YMkYwv0Wi0BtNFLVguFsMeqDXnegUUN4";
+    // if (data.userId) {
+    //   // Direct user ID provided (preferred method)
+    //   userId = data.userId;
+    // } else if (data.createdBy) {
+    //   // Look up user by email; if not found, gracefully fall back
+    //   const owner = await db.query.user.findFirst({ where: (m, { eq }) => eq(m.email, data.createdBy!) });
+    //   userId ="YMkYwv0Wi0BtNFLVguFsMeqDXnegUUN4";
+    // } else {
+    //   // Fallback to participantId if no user info provided
+     
+    // }
 
     if (isUpdate) {
       // Update existing test - only update fields that are provided

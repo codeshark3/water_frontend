@@ -79,13 +79,10 @@ export async function GET(
       return NextResponse.json({ error: "Test ID is required" }, { status: 400 });
     }
 
-    const test = await db.select().from(tests).where(eq(tests.id, testId));
-    
-    if (test.length === 0) {
+    const [testData] = await db.select().from(tests).where(eq(tests.id, testId));
+    if (!testData) {
       return NextResponse.json({ error: "Test not found" }, { status: 404 });
     }
-
-    const testData = test[0];
     
     // Format the response to match mobile app expectations
     const formattedTest = {

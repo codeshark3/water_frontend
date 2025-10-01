@@ -24,6 +24,10 @@ const adminRoutes = [
 ];
 
 export default async function authMiddleware(request: NextRequest) {
+  // Auth temporarily disabled
+  return NextResponse.next();
+
+  /*
   const pathName = request.nextUrl.pathname;
   // Check if it's a dynamic dataset route like /datasets/123
   const isDynamicTestRoute = /^\/tests\/[^\/]+$/.test(pathName);
@@ -114,7 +118,8 @@ export default async function authMiddleware(request: NextRequest) {
   // Default: Redirect unauthorized access to home
   return NextResponse.redirect(new URL("/", request.url));
 }
-
+*/
+}
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
 };
