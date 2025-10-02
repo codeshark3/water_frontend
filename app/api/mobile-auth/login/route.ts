@@ -3,6 +3,8 @@ import { db } from "~/server/db";
 import { user } from "~/server/db/schema";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
+import * as jwt from "jsonwebtoken";
+import { env } from "~/env";
 
 const LoginSchema = z.object({
   email: z.string().email(),
@@ -72,10 +74,16 @@ export async function POST(req: NextRequest) {
       updatedAt: foundUser.updatedAt.toISOString(),
     };
 
+    // Create a JWT
+    const token = jwt.sign(sessionData, env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
     // Create response with session cookie
     const response = NextResponse.json({
       success: true,
-      user: sessionData
+      user: sessionData,
+      token,
     });
 
     // Set session cookie (expires in 7 days)

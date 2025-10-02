@@ -9,6 +9,7 @@ export const env = createEnv({
    */
   server: {
     POSTGRES_URL: z.string().url(),
+    JWT_SECRET: z.string(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -29,6 +30,7 @@ export const env = createEnv({
    */
   runtimeEnv: {
     POSTGRES_URL: process.env.POSTGRES_URL,
+    JWT_SECRET: process.env.JWT_SECRET,
     NODE_ENV: process.env.NODE_ENV,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
